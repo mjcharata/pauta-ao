@@ -3,12 +3,11 @@
   "name": "pauta-ao",
   "compatibility_date": "2026-08-02",
   "compatibility_flags": ["nodejs_compat"],
-  "main": "vinext/server/app-router-entry",
+  "main": "vinext/server/fetch-handler",
   "assets": {
     "directory": "dist/client",
     "not_found_handling": "none",
     "binding": "ASSETS"
-  }
-,
+  },
   "cache": { "enabled": true }
 }
