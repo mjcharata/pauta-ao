@@ -152,6 +152,8 @@ td code { color: var(--forest); font-size: 13px; font-weight: 700; letter-spacin
 footer { border-top: 1px solid #d5d6cf; max-width: 1184px; margin: 0 auto; padding: 27px 0 40px; display: grid; grid-template-columns: 1fr 1fr 1fr; align-items: center; color: var(--muted); font-size: 10px; }
 footer p { text-align: center; }
 footer > span:last-child { text-align: right; }
+.creator-credit a { color: var(--forest); font-weight: 700; text-decoration: none; border-bottom: 1px solid rgba(20, 72, 55, .28); transition: color .18s ease, border-color .18s ease; }
+.creator-credit a:hover, .creator-credit a:focus-visible { color: var(--gold-dark); border-color: currentColor; }
 .footer-brand .brand-mark { width: 31px; height: 31px; }
 .footer-brand strong { font-size: 14px; }
 .footer-brand small { font-size: 8px; }

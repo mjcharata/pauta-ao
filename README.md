@@ -43,7 +43,7 @@ OPENAI_MODEL=gpt-5.6-luna
 
 Nunca publique a sua chave no GitHub. O ficheiro `.env.local` já está excluído pelo `.gitignore`.
 
-Sem uma chave configurada, a aplicação continua funcional. O modo gratuito usa um modelo local de análise semântica (TF-IDF + LSA), treinado sobre os 6.006 registos, sem enviar as descrições dos produtos para serviços externos.
+Sem uma chave configurada, a aplicação continua funcional. O modo gratuito usa um modelo híbrido local (TF-IDF + LSA, vocabulário comercial, contexto por família pautal e sinais de material/utilização), treinado sobre os 6.006 registos, sem enviar as descrições dos produtos para serviços externos.
 
 ## Estrutura principal
 

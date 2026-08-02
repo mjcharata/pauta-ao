@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, useDeferredValue, useMemo, useState } from "react";
+import { ChangeEvent, useMemo, useState } from "react";
 import pautaRecords from "./data/pauta.json";
 
 type TariffRecord = {
@@ -166,7 +166,6 @@ export default function Home() {
   const [classificationMode, setClassificationMode] = useState<ClassificationMode | null>(null);
   const [classificationProgress, setClassificationProgress] = useState("");
   const [notice, setNotice] = useState("");
-  const deferredQuery = useDeferredValue(query);
 
   const chapters = useMemo(
     () => Array.from(new Set(records.map((item) => item.code.slice(0, 2)))).sort(),
@@ -182,18 +181,19 @@ export default function Home() {
   );
 
   const filtered = useMemo(() => {
-    const term = normalize(deferredQuery);
-    const compactTerm = deferredQuery.replace(/\D/g, "");
+    const term = normalize(query);
+    const compactTerm = query.replace(/\D/g, "");
     return records.filter((record) => {
       const matchesQuery =
         !term ||
         normalize(record.description).includes(term) ||
-        record.code.replace(/\D/g, "").includes(compactTerm);
+        (compactTerm.length > 0 &&
+          record.code.replace(/\D/g, "").includes(compactTerm));
       const matchesChapter = chapter === "todos" || record.code.startsWith(chapter);
       const matchesRate = rate === "todos" || record.rate === rate;
       return matchesQuery && matchesChapter && matchesRate;
     });
-  }, [chapter, deferredQuery, rate]);
+  }, [chapter, query, rate]);
 
   const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const visibleRows = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
@@ -442,7 +442,7 @@ export default function Home() {
                   disabled={classifying}
                 >
                   <span><i /> IA local gratuita</span>
-                  <small>No navegador · sem chave · privado</small>
+                  <small>Modelo híbrido 2.0 · sem chave · privado</small>
                 </button>
                 <button
                   className={classifierEngine === "openai" ? "active" : ""}
@@ -463,9 +463,9 @@ export default function Home() {
 
             <aside className="method-card">
               <span className="method-kicker">MÉTODO</span>
-              <h2>IA local com contexto pautal</h2>
-              <p>O modo gratuito compara semanticamente cada produto com os 6.006 códigos no próprio dispositivo. As descrições não saem do navegador.</p>
-              <ul><li><span>1</span>Interpreta a descrição comercial</li><li><span>2</span>Compara posições candidatas</li><li><span>3</span>Sinaliza ambiguidades</li></ul>
+              <h2>Modelo híbrido com contexto pautal</h2>
+              <p>O modo gratuito reconhece sinónimos, materiais, finalidade e linguagem comercial antes de comparar cada produto com os 6.006 códigos. Tudo é processado no dispositivo.</p>
+              <ul><li><span>1</span>Interpreta sinónimos comerciais</li><li><span>2</span>Cruza família, material e utilização</li><li><span>3</span>Sinaliza alternativas próximas</li></ul>
               <div className="legal-note">A classificação proposta é indicativa e não substitui uma Informação Pautal Vinculativa da Administração Geral Tributária.</div>
             </aside>
           </div>
@@ -494,7 +494,9 @@ export default function Home() {
       <footer>
         <div className="brand footer-brand"><span className="brand-mark">PA</span><span><strong>Pauta AO</strong><small>Consulta aduaneira simplificada</small></span></div>
         <p>Base documental: Decreto Legislativo Presidencial n.º 1/24, de 3 de Janeiro.</p>
-        <span>Feito para profissionais do comércio externo angolano.</span>
+        <span className="creator-credit">
+          Criado por <a href="https://www.linkedin.com/in/mjcharata/" target="_blank" rel="noreferrer">Márcio Charata · LinkedIn ↗</a>
+        </span>
       </footer>
 
       {selected && (
