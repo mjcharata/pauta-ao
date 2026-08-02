@@ -1,4 +1,5 @@
 import vinext from "vinext";
+import rsc from "@vitejs/plugin-rsc";
 import { defineConfig } from "vite";
 
 // macOS Seatbelt blocks FSEvents, so Codex previews need polling for HMR.
@@ -24,7 +25,14 @@ export default defineConfig(async () => {
       ? { watch: { useFsEvents: false, usePolling: true } }
       : undefined,
     plugins: [
-      vinext(),
+      vinext({ rsc: false }),
+      rsc({
+        entries: {
+          rsc: "virtual:vinext-rsc-entry",
+          ssr: "virtual:vinext-app-ssr-entry",
+          client: "virtual:vinext-app-browser-entry",
+        },
+      }),
       cloudflare({
         viteEnvironment: { name: "rsc", childEnvironments: ["ssr"] },
         config: localBindingConfig,
