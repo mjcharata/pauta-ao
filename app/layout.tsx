@@ -9,13 +9,13 @@ export async function generateMetadata(): Promise<Metadata> {
   const base = host ? `${protocol}://${host}` : undefined;
 
   return {
-    title: "Pauta AO — Pauta Aduaneira de Angola 2024",
-    description: "Pesquisa de códigos pautais, direitos de importação e classificação assistida de listas de produtos.",
+    title: "Pauta AO — Taxas aduaneiras actualizadas pelo OGE 2026",
+    description: "Pesquisa de códigos pautais, taxas do OGE 2026 e classificação assistida de listas de produtos.",
     metadataBase: base ? new URL(base) : undefined,
     icons: { icon: "/favicon.png", shortcut: "/favicon.png" },
     openGraph: {
       title: "Pauta AO — Encontre o código certo",
-      description: "A Pauta Aduaneira de Angola, pesquisável e pronta para o seu trabalho.",
+      description: "A Pauta Aduaneira de Angola com as taxas actualizadas pelo OGE 2026.",
       type: "website",
       images: [{ url: "/og.png", width: 1200, height: 630, alt: "Pauta AO — pesquisa pautal para Angola" }],
     },

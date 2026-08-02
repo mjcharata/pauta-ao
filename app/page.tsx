@@ -9,6 +9,9 @@ type TariffRecord = {
   unit: string;
   rate: string;
   page: number;
+  source?: string;
+  rateSource?: string;
+  ogePage?: number;
 };
 
 type Classification = {
@@ -215,11 +218,16 @@ export default function Home() {
         "Designação das mercadorias": record.description,
         UQ: record.unit,
         "Direito de importação (R.G.)": record.rate,
-        "Página da fonte": record.page,
+        "Fonte da nomenclatura": record.source === "OGE 2026"
+          ? `Lei n.º 14/25, Anexo III, p. ${record.page}`
+          : `Pauta Aduaneira 2024, p. ${record.page}`,
+        "Fonte da taxa": record.rateSource
+          ? `${record.rateSource}, p. ${record.ogePage}`
+          : "Decreto Legislativo Presidencial n.º 1/24",
       })),
       filtered.length === records.length
-        ? "pauta-aduaneira-angola-2024.xls"
-        : "pauta-aduaneira-angola-2024-filtrada.xls",
+        ? "pauta-aduaneira-angola-taxas-oge-2026.xls"
+        : "pauta-aduaneira-angola-taxas-oge-2026-filtrada.xls",
     );
     showNotice(`${filtered.length.toLocaleString("pt-AO")} linhas preparadas para Excel.`);
   }
@@ -325,7 +333,7 @@ export default function Home() {
           <button className={view === "search" ? "active" : ""} onClick={() => setView("search")}>Pesquisa</button>
           <button className={view === "classify" ? "active" : ""} onClick={() => setView("classify")}>Classificar lista</button>
         </nav>
-        <div className="edition-pill"><span /> Edição oficial 2024</div>
+        <div className="edition-pill"><span /> Taxas actualizadas · OGE 2026</div>
       </header>
 
       {view === "search" ? (
@@ -334,7 +342,7 @@ export default function Home() {
             <div className="hero-copy">
               <p className="eyebrow">PAUTA ADUANEIRA DE ANGOLA · SH 2022</p>
               <h1>Encontre o código certo.<br />Com clareza.</h1>
-              <p className="hero-lede">Pesquise por mercadoria ou código pautal e consulte os direitos de importação publicados no Diário da República.</p>
+              <p className="hero-lede">Pesquise por mercadoria ou código pautal e consulte os direitos de importação actualizados pelo OGE 2026.</p>
             </div>
             <div className="search-card">
               <label htmlFor="tariff-search">O que pretende importar?</label>
@@ -356,13 +364,13 @@ export default function Home() {
                 ))}
               </div>
             </div>
-            <div className="source-note">Fonte: Diário da República, I Série — n.º 2, de 3 de Janeiro de 2024</div>
+            <div className="source-note">Base: DLP n.º 1/24 · Taxas: Lei n.º 14/25 (OGE 2026), artigo 31.º e Anexo III</div>
           </section>
 
           <section className="summary-strip" aria-label="Resumo da pauta">
             <div><strong>{records.length.toLocaleString("pt-AO")}</strong><span>códigos indexados</span></div>
             <div><strong>{chapters.length}</strong><span>capítulos disponíveis</span></div>
-            <div><strong>03.01.2024</strong><span>base legal vigente</span></div>
+            <div><strong>01.01.2026</strong><span>taxas OGE 2026</span></div>
             <button className="export-button" onClick={exportTariff}><span aria-hidden="true">↓</span> Exportar para Excel</button>
           </section>
 
@@ -464,7 +472,7 @@ export default function Home() {
             <aside className="method-card">
               <span className="method-kicker">MÉTODO</span>
               <h2>Modelo híbrido com contexto pautal</h2>
-              <p>O modo gratuito reconhece sinónimos, materiais, finalidade e linguagem comercial antes de comparar cada produto com os 6.006 códigos. Tudo é processado no dispositivo.</p>
+              <p>O modo gratuito reconhece sinónimos, materiais, finalidade e linguagem comercial antes de comparar cada produto com os 6.056 códigos. Tudo é processado no dispositivo.</p>
               <ul><li><span>1</span>Interpreta sinónimos comerciais</li><li><span>2</span>Cruza família, material e utilização</li><li><span>3</span>Sinaliza alternativas próximas</li></ul>
               <div className="legal-note">A classificação proposta é indicativa e não substitui uma Informação Pautal Vinculativa da Administração Geral Tributária.</div>
             </aside>
@@ -493,7 +501,7 @@ export default function Home() {
 
       <footer>
         <div className="brand footer-brand"><span className="brand-mark">PA</span><span><strong>Pauta AO</strong><small>Consulta aduaneira simplificada</small></span></div>
-        <p>Base documental: Decreto Legislativo Presidencial n.º 1/24, de 3 de Janeiro.</p>
+        <p>Base: DLP n.º 1/24 · Taxas actualizadas pela Lei n.º 14/25 (OGE 2026).</p>
         <span className="creator-credit">
           Criado por <a href="https://www.linkedin.com/in/mjcharata/" target="_blank" rel="noreferrer">Márcio Charata · LinkedIn ↗</a>
         </span>
@@ -509,10 +517,11 @@ export default function Home() {
             <dl>
               <div><dt>Capítulo</dt><dd>{chapterLabel(selected.code.slice(0, 2))}</dd></div>
               <div><dt>Unidade de quantidade</dt><dd>{selected.unit || "Não indicada"}</dd></div>
-              <div><dt>Direito de importação — R.G.</dt><dd>{formatRate(selected.rate)}</dd></div>
-              <div><dt>Fonte documental</dt><dd>Página {selected.page} do PDF oficial</dd></div>
+              <div><dt>Direito de importação — R.G. 2026</dt><dd>{formatRate(selected.rate)}</dd></div>
+              <div><dt>Fonte da nomenclatura</dt><dd>{selected.source === "OGE 2026" ? `Anexo III do OGE 2026, página ${selected.page}` : `Pauta Aduaneira 2024, página ${selected.page}`}</dd></div>
+              {selected.rateSource && <div><dt>Fonte da taxa</dt><dd>{selected.rateSource}, página {selected.ogePage}</dd></div>}
             </dl>
-            <div className="drawer-callout"><strong>Nota de utilização</strong><p>Confirme notas de secção, capítulo e eventuais benefícios antes da declaração aduaneira.</p></div>
+            <div className="drawer-callout"><strong>Nota de utilização</strong><p>Em 2026, a regra geral estabelece um mínimo de 5%, sem prejuízo das mercadorias Livres, benefícios legais e taxas específicas do Anexo III. Confirme sempre as notas e excepções aplicáveis.</p></div>
             <button className="primary-button full" onClick={() => { navigator.clipboard?.writeText(selected.code); showNotice("Código copiado."); }}>Copiar código pautal</button>
           </aside>
         </div>
