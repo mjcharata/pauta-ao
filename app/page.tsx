@@ -349,7 +349,7 @@ export default function Home() {
         <a className="brand" href="#top" aria-label="Pauta AO — página inicial" onClick={() => setView("search")}>
           <span className="brand-mark">PA</span>
           <span>
-            <strong>Pauta AO <span className="brand-country-flag" aria-hidden="true">🇦🇴</span></strong>
+            <strong>Pauta AO <img className="brand-country-flag" src="/angola-flag.svg" alt="" aria-hidden="true" /></strong>
             <small>Comércio exterior · Angola</small>
           </span>
         </a>
@@ -362,7 +362,7 @@ export default function Home() {
           </button>
         </nav>
         <div className="edition-pill" aria-label="Aplicação exclusiva para Angola">
-          <span className="angola-flag" aria-hidden="true">🇦🇴</span>
+          <img className="angola-flag" src="/angola-flag.svg" alt="" aria-hidden="true" />
           <span className="edition-copy"><strong>Exclusivo para Angola</strong><small>Taxas actualizadas · OGE 2026</small></span>
         </div>
       </header>
@@ -554,7 +554,7 @@ export default function Home() {
       )}
 
       <footer>
-        <div className="brand footer-brand"><span className="brand-mark">PA</span><span><strong>Pauta AO <span className="brand-country-flag" aria-hidden="true">🇦🇴</span></strong><small>Consulta aduaneira de Angola</small></span></div>
+        <div className="brand footer-brand"><span className="brand-mark">PA</span><span><strong>Pauta AO <img className="brand-country-flag" src="/angola-flag.svg" alt="" aria-hidden="true" /></strong><small>Consulta aduaneira de Angola</small></span></div>
         <p>Base: DLP n.º 1/24 · Taxas actualizadas pela Lei n.º 14/25 (OGE 2026).</p>
         <span className="creator-credit">
           Criado por <a href="https://www.linkedin.com/in/mjcharata/" target="_blank" rel="noreferrer">Márcio Charata · LinkedIn ↗</a>

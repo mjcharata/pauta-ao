@@ -26,7 +26,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .brand-mark::after { content: ""; width: 5px; height: 5px; background: var(--gold); position: absolute; right: -3px; bottom: -3px; }
 .brand strong { display: block; font: 700 17px/1.1 Georgia, serif; }
 .brand small { display: block; margin-top: 4px; color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: .12em; }
-.brand-country-flag { display: inline; font: 400 15px/1 system-ui, sans-serif; margin-left: 5px; vertical-align: 1px; }
+.brand-country-flag { display: inline-block; width: 21px; height: 14px; margin-left: 6px; border: 1px solid rgba(29,36,32,.18); object-fit: cover; vertical-align: -2px; }
 .main-nav { display: flex; gap: 28px; height: 100%; }
 .main-nav button { position: relative; border: 0; background: transparent; color: #69716c; font-size: 14px; padding: 0; }
 .main-nav button.active { color: var(--ink); font-weight: 650; }
@@ -40,7 +40,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .vehicle-nav-badge { color: #755a27; background: #d9c28f; padding: 4px 5px 3px; font-size: 7px; line-height: 1; letter-spacing: .12em; text-transform: uppercase; }
 .vehicle-nav:hover .vehicle-nav-badge, .vehicle-nav.active .vehicle-nav-badge { color: var(--forest); background: #d8bd7c; }
 .edition-pill { justify-self: end; display: flex; align-items: center; gap: 9px; color: var(--forest); border: 1px solid #cdd7d1; border-radius: 999px; padding: 7px 12px 7px 9px; background: rgba(255,255,255,.42); }
-.angola-flag { font-size: 20px; line-height: 1; }
+.angola-flag { width: 30px; height: 20px; flex: none; border: 1px solid rgba(29,36,32,.18); border-radius: 2px; object-fit: cover; box-shadow: 0 1px 3px rgba(29,36,32,.14); }
 .edition-copy { display: flex; flex-direction: column; gap: 2px; }
 .edition-copy strong { font-size: 10px; line-height: 1; }
 .edition-copy small { color: var(--muted); font-size: 8px; line-height: 1; }
