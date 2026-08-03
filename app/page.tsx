@@ -375,7 +375,7 @@ export default function Home() {
               <h1>Encontre o código certo.<br />Com clareza.</h1>
               <p className="hero-lede">Pesquise por mercadoria ou código pautal e consulte os direitos de importação actualizados pelo OGE 2026.</p>
               <button className="vehicle-hero-cta" onClick={openVehicleSimulator}>
-                <span className="vehicle-hero-mark" aria-hidden="true">SV</span>
+              <span className="vehicle-hero-mark" aria-hidden="true" />
                 <span className="vehicle-hero-copy">
                   <small>NOVO · SIMULADOR DE IMPORTAÇÃO 2026</small>
                   <strong>Calcule os custos da sua viatura</strong>
