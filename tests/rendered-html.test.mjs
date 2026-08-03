@@ -36,7 +36,7 @@ test("includes the 2026 vehicle import simulator and its legal safeguards", asyn
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/vehicle-simulator.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/api/exchange/route.ts", import.meta.url), "utf8"),
-    readFile(new URL("../public/vehicle-showcase.png", import.meta.url)),
+    readFile(new URL("../public/vehicle-showcase.jpg", import.meta.url)),
   ]);
   assert.match(pageSource, /VehicleSimulator/);
   assert.match(pageSource, /Simulador de viaturas/);
@@ -55,8 +55,8 @@ test("includes the 2026 vehicle import simulator and its legal safeguards", asyn
   assert.match(simulatorSource, /Conversor oficial de moedas · BNA/);
   assert.match(simulatorSource, /Lexus LX 600/);
   assert.match(simulatorSource, /BMW R 1200 GS/);
-  assert.equal(vehicleImage.subarray(1, 4).toString("ascii"), "PNG");
-  assert.ok(vehicleImage.byteLength > 1_000_000);
+  assert.equal(vehicleImage.subarray(0, 2).toString("hex"), "ffd8");
+  assert.ok(vehicleImage.byteLength > 100_000);
   assert.match(exchangeRoute, /www\.bna\.ao\/service\/rest\/taxas\/conversor\/moeda/);
   assert.match(exchangeRoute, /tipoCambio\?\.toUpperCase\(\) === "G"/);
 });

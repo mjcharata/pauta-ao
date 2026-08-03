@@ -200,7 +200,7 @@ td code { color: var(--forest); font-size: 13px; font-weight: 700; letter-spacin
 .vehicle-group-tabs button.active span { color: #d2b36f; }
 .vehicle-group-tabs button.active::after { content: ""; position: absolute; left: 20px; right: 20px; bottom: 0; height: 2px; background: var(--gold); }
 .vehicle-showcase { display: grid; grid-template-columns: 1.14fr .86fr; border: 1px solid #d5d6cf; margin-bottom: 18px; background: var(--card); overflow: hidden; }
-.vehicle-showcase-image { aspect-ratio: 3 / 2; min-width: 0; background-color: var(--paper); background-image: url("/vehicle-showcase.png"); background-repeat: no-repeat; background-size: 200% auto; transition: background-position .28s ease; }
+.vehicle-showcase-image { aspect-ratio: 3 / 2; min-width: 0; background-color: var(--paper); background-image: url("/vehicle-showcase.jpg"); background-repeat: no-repeat; background-size: 200% auto; transition: background-position .28s ease; }
 .vehicle-showcase-image.road { background-position: 0 0; }
 .vehicle-showcase-image.motorcycle { background-position: 100% 0; }
 .vehicle-showcase-image.marine { background-position: 0 100%; }
