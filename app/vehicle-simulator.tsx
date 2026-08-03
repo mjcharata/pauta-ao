@@ -28,6 +28,29 @@ const GROUPS: Array<{ id: VehicleGroup; label: string; short: string }> = [
   { id: "air", label: "Aeronaves", short: "Aeronaves" },
 ];
 
+const GROUP_VISUALS: Record<VehicleGroup, { title: string; category: string; description: string }> = {
+  road: {
+    title: "Lexus LX 600",
+    category: "VIATURA TERRESTRE · REFERÊNCIA VISUAL",
+    description: "SUV de passageiros utilizado para representar automóveis ligeiros no simulador.",
+  },
+  motorcycle: {
+    title: "BMW R 1200 GS",
+    category: "MOTOCICLO · REFERÊNCIA VISUAL",
+    description: "Motociclo de aventura utilizado para representar a categoria de duas rodas.",
+  },
+  marine: {
+    title: "Iate a motor de recreio",
+    category: "EMBARCAÇÃO · REFERÊNCIA VISUAL",
+    description: "Embarcação de recreio utilizada para representar barcos e outras estruturas flutuantes.",
+  },
+  air: {
+    title: "Avião executivo de longo curso",
+    category: "AERONAVE · REFERÊNCIA VISUAL",
+    description: "Jacto executivo utilizado para representar aeronaves e aparelhos aéreos.",
+  },
+};
+
 const VEHICLES: VehicleVariant[] = [
   { id: "petrol-1000", group: "road", label: "Automóvel a gasolina · até 1 000 cm³", detail: "Passageiros, excepto ambulâncias e funerários", codeNew: "8703.21.19", codeUsed: "8703.21.29", dutyNew: 5, dutyUsed: 5, iec: 0, roadClass: "light" },
   { id: "petrol-1500", group: "road", label: "Automóvel a gasolina · 1 001 a 1 500 cm³", detail: "Passageiros, excepto ambulâncias e funerários", codeNew: "8703.22.19", codeUsed: "8703.22.29", dutyNew: 5, dutyUsed: 10, iec: 0, roadClass: "light" },
@@ -192,6 +215,7 @@ export default function VehicleSimulator() {
 
   const groupVehicles = VEHICLES.filter((item) => item.group === group);
   const vehicle = VEHICLES.find((item) => item.id === vehicleId) ?? groupVehicles[0];
+  const groupVisual = GROUP_VISUALS[group];
   const exchangeRate = currency === "AOA" ? 1 : (bnaRate ?? 0) * (1 + EXCHANGE_SPREAD);
   const exchangeReady = currency === "AOA" || (bnaRate !== null && bnaRate > 0);
 
@@ -269,6 +293,16 @@ export default function VehicleSimulator() {
           </button>
         ))}
       </div>
+
+      <section className="vehicle-showcase" aria-label={`Referência visual: ${groupVisual.title}`}>
+        <div className={`vehicle-showcase-image ${group}`} role="img" aria-label={groupVisual.title} />
+        <div className="vehicle-showcase-copy">
+          <span>{groupVisual.category}</span>
+          <h2>{groupVisual.title}</h2>
+          <p>{groupVisual.description}</p>
+          <small>A imagem é ilustrativa. A classificação e os impostos dependem das características seleccionadas abaixo.</small>
+        </div>
+      </section>
 
       <div className="simulator-layout">
         <div className="simulator-form-card">
