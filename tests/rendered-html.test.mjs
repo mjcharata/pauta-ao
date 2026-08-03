@@ -20,10 +20,18 @@ test("renders the customs tariff experience", async () => {
   assert.match(html, /Pauta AO/);
   assert.match(html, /Encontre o código certo/);
   assert.match(html, /Exportar para Excel/);
+  assert.match(html, /Descarregar PDF oficial/);
+  assert.match(html, /pauta-aduaneira-angola-2024\.pdf/);
   assert.match(html, /Pesquisa com IA/);
   assert.match(html, /class="search-submit">Pesquisar/);
   assert.match(html, /OGE 2026/);
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton/i);
+});
+
+test("packages the complete official source PDF", async () => {
+  const pdf = await readFile(new URL("../public/pauta-aduaneira-angola-2024.pdf", import.meta.url));
+  assert.equal(pdf.subarray(0, 5).toString("ascii"), "%PDF-");
+  assert.equal(pdf.byteLength, 20514916);
 });
 
 test("keeps the local AI model aligned with the tariff database", async () => {

@@ -64,13 +64,17 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .ai-status-dot { width: 7px; height: 7px; border-radius: 50%; background: #4d7a61; box-shadow: 0 0 0 4px rgba(77,122,97,.1); flex: none; }
 .source-note { grid-column: 2; color: #888d89; font-size: 10px; letter-spacing: .025em; margin-top: -54px; transform: translateY(36px); }
 
-.summary-strip { max-width: 1184px; margin: 0 auto 84px; min-height: 91px; background: var(--forest); color: white; display: grid; grid-template-columns: repeat(3, 1fr) 1.35fr; align-items: stretch; }
+.summary-strip { max-width: 1184px; margin: 0 auto 84px; min-height: 91px; background: var(--forest); color: white; display: grid; grid-template-columns: repeat(3, .9fr) 1.15fr 1.25fr; align-items: stretch; }
 .summary-strip > div { padding: 22px 30px; display: flex; flex-direction: column; justify-content: center; border-right: 1px solid rgba(255,255,255,.14); }
 .summary-strip strong { font: 500 23px/1 Georgia, serif; }
 .summary-strip span { color: rgba(255,255,255,.65); font-size: 10px; margin-top: 7px; text-transform: uppercase; letter-spacing: .1em; }
-.export-button { border: 0; background: #214936; color: white; display: flex; justify-content: center; align-items: center; gap: 11px; font-size: 13px; font-weight: 650; }
+.export-button { border: 0; background: #214936; color: white; display: flex; justify-content: center; align-items: center; gap: 11px; font-size: 13px; font-weight: 650; text-decoration: none; }
 .export-button:hover { background: var(--forest-2); }
 .export-button span { font-size: 20px; color: #d2b36f; margin: 0; }
+.pdf-export { background: #28523e; border-left: 1px solid rgba(255,255,255,.14); padding: 0 18px; }
+.pdf-export > span:last-child { display: flex; flex-direction: column; color: white; font-size: inherit; margin: 0; text-transform: none; letter-spacing: normal; }
+.pdf-export strong { font: inherit; }
+.pdf-export small { color: rgba(255,255,255,.6); font-size: 9px; font-weight: 400; margin-top: 5px; }
 
 .catalogue { max-width: 1184px; margin: 0 auto; padding: 0 0 90px; }
 .section-heading { display: flex; justify-content: space-between; align-items: end; margin-bottom: 28px; }

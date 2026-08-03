@@ -398,6 +398,10 @@ export default function Home() {
             <div><strong>{chapters.length}</strong><span>capítulos disponíveis</span></div>
             <div><strong>01.01.2026</strong><span>taxas OGE 2026</span></div>
             <button className="export-button" onClick={exportTariff}><span aria-hidden="true">↓</span> Exportar para Excel</button>
+            <a className="export-button pdf-export" href="/pauta-aduaneira-angola-2024.pdf" download>
+              <span aria-hidden="true">↓</span>
+              <span><strong>Descarregar PDF oficial</strong><small>Pauta Aduaneira 2024 · 345 páginas</small></span>
+            </a>
           </section>
 
           <section className="catalogue" aria-labelledby="catalogue-title">
