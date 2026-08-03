@@ -154,6 +154,8 @@ const CURRENCIES = [
 ] as const;
 
 const EXCHANGE_SPREAD = 0.035;
+const CREDIT_ANNUAL_RATE = 0.25;
+const CREDIT_MAX_MONTHS = 60;
 
 function formatKz(value: number) {
   return `${Math.round(value).toLocaleString("pt-AO")} Kz`;
@@ -189,6 +191,8 @@ export default function VehicleSimulator() {
   const [purchaseValue, setPurchaseValue] = useState(25000);
   const [freight, setFreight] = useState(2000);
   const [insurance, setInsurance] = useState(250);
+  const [downPaymentPercent, setDownPaymentPercent] = useState(20);
+  const [loanTermMonths, setLoanTermMonths] = useState(CREDIT_MAX_MONTHS);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -256,6 +260,24 @@ export default function VehicleSimulator() {
   const maxUsedAge = vehicle.roadClass ? MAX_USED_AGE[vehicle.roadClass] : undefined;
   const usedAge = Math.max(0, 2026 - firstRegistrationYear);
   const exceedsAge = condition === "used" && maxUsedAge !== undefined && usedAge > maxUsedAge;
+  const credit = (() => {
+    const downPayment = Math.min(calculation.landedValue, Math.max(0, calculation.landedValue * downPaymentPercent / 100));
+    const financedAmount = Math.max(0, calculation.landedValue - downPayment);
+    const monthlyRate = CREDIT_ANNUAL_RATE / 12;
+    const monthlyPayment = financedAmount > 0
+      ? financedAmount * monthlyRate / (1 - Math.pow(1 + monthlyRate, -loanTermMonths))
+      : 0;
+    const installmentsTotal = monthlyPayment * loanTermMonths;
+    return {
+      downPayment,
+      financedAmount,
+      monthlyRate,
+      monthlyPayment,
+      installmentsTotal,
+      interestTotal: Math.max(0, installmentsTotal - financedAmount),
+      totalWithCredit: downPayment + installmentsTotal,
+    };
+  })();
 
   function selectGroup(nextGroup: VehicleGroup) {
     setGroup(nextGroup);
@@ -398,6 +420,74 @@ export default function VehicleSimulator() {
           <p className="result-disclaimer">Estimativa indicativa. Não inclui despachante, armazenagem, porto ou terminal, inspecção, matrícula, seguro obrigatório nem IVM anual. A AGT pode ajustar o valor aduaneiro e a classificação.</p>
         </aside>
       </div>
+
+      <section className="credit-simulator" aria-labelledby="credit-simulator-title">
+        <div className="credit-heading">
+          <div>
+            <p className="eyebrow">SIMULAÇÃO FINANCEIRA</p>
+            <h2 id="credit-simulator-title">Crédito automóvel</h2>
+            <p>Calcule uma prestação indicativa sobre o custo final da importação, com taxa anual média de 25% e valor residual zero.</p>
+          </div>
+          <button type="button" onClick={() => window.print()}>Imprimir simulação completa <span aria-hidden="true">↗</span></button>
+        </div>
+
+        <div className="credit-layout">
+          <div className="credit-form-card">
+            <div className="credit-base-value">
+              <span>PREÇO FINAL DA IMPORTAÇÃO</span>
+              <strong>{exchangeReady ? formatKz(calculation.landedValue) : "A aguardar taxa BNA"}</strong>
+              <small>Valor aduaneiro, impostos e encargos estimados.</small>
+            </div>
+
+            <div className="credit-input-grid">
+              <label className="simulator-field">
+                <span>Valor da entrada</span>
+                <div className="money-input"><input type="number" min="0" max={Math.round(calculation.landedValue)} step="10000" value={Math.round(credit.downPayment)} disabled={!exchangeReady} onChange={(event) => { const amount = Number(event.target.value); setDownPaymentPercent(calculation.landedValue > 0 ? Math.min(100, Math.max(0, amount / calculation.landedValue * 100)) : 0); }} /><b>AOA</b></div>
+                <small>{downPaymentPercent.toLocaleString("pt-AO", { maximumFractionDigits: 1 })}% do preço final</small>
+              </label>
+
+              <label className="simulator-field">
+                <span>Prazo do crédito</span>
+                <select value={loanTermMonths} onChange={(event) => setLoanTermMonths(Number(event.target.value))}>
+                  {[12, 24, 36, 48, 60].map((months) => <option key={months} value={months}>{months} meses · {months / 12} {months === 12 ? "ano" : "anos"}</option>)}
+                </select>
+                <small>Prazo máximo de 5 anos.</small>
+              </label>
+
+              <div className="credit-fixed-field">
+                <span>TAXA ANUAL MÉDIA</span>
+                <strong>25%</strong>
+                <small>Taxa nominal usada na estimativa.</small>
+              </div>
+
+              <div className="credit-fixed-field">
+                <span>VALOR RESIDUAL</span>
+                <strong>0 Kz</strong>
+                <small>Liquidação integral no prazo escolhido.</small>
+              </div>
+            </div>
+
+            <label className="down-payment-range">
+              <span><b>Ajustar entrada</b><small>0%</small><small>100%</small></span>
+              <input aria-label="Percentagem de entrada" type="range" min="0" max="100" step="1" value={Math.round(downPaymentPercent)} disabled={!exchangeReady} onChange={(event) => setDownPaymentPercent(Number(event.target.value))} />
+            </label>
+          </div>
+
+          <aside className="credit-result" aria-live="polite">
+            <div className="credit-result-topline"><span>PLANO ESTIMADO</span><small>{loanTermMonths} PRESTAÇÕES</small></div>
+            <div className="monthly-payment"><span>PRESTAÇÃO MENSAL</span><strong>{formatKz(credit.monthlyPayment)}</strong><small>Taxa mensal nominal: {(credit.monthlyRate * 100).toLocaleString("pt-AO", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%</small></div>
+            <dl>
+              <div><dt>Entrada</dt><dd>{formatKz(credit.downPayment)}</dd></div>
+              <div><dt>Montante financiado</dt><dd>{formatKz(credit.financedAmount)}</dd></div>
+              <div><dt>Total das prestações</dt><dd>{formatKz(credit.installmentsTotal)}</dd></div>
+              <div><dt>Juros estimados</dt><dd>{formatKz(credit.interestTotal)}</dd></div>
+              <div><dt>Valor residual</dt><dd>0 Kz</dd></div>
+            </dl>
+            <div className="credit-grand-total"><span>CUSTO TOTAL COM CRÉDITO</span><strong>{formatKz(credit.totalWithCredit)}</strong><small>Entrada + {loanTermMonths} prestações mensais.</small></div>
+            <p>Simulação meramente indicativa. Não inclui comissões bancárias, imposto de selo do crédito, seguros, avaliação, abertura do processo ou outras despesas. A aprovação e a taxa efectiva dependem da instituição financeira.</p>
+          </aside>
+        </div>
+      </section>
 
       <section className="simulator-legal">
         <div><p className="eyebrow">COBERTURA PAUTAL</p><h2>Capítulos 87, 88 e 89</h2><p>O simulador reúne veículos terrestres e motociclos, aeronaves e aparelhos espaciais, embarcações e estruturas flutuantes. Quando peso, potência, casco ou uso alteram a classificação, a opção é assinalada como representativa.</p></div>

@@ -295,6 +295,44 @@ td code { color: var(--forest); font-size: 13px; font-weight: 700; letter-spacin
 .result-total strong { font: 500 27px Georgia, serif; }
 .result-total b { font: 500 16px Georgia, serif; color: #d7bd80; }
 .result-disclaimer { color: rgba(255,255,255,.48); font-size: 8px; line-height: 1.55; margin: 16px 0 0; }
+.credit-simulator { margin-top: 18px; border: 1px solid #d5d6cf; background: var(--card); }
+.credit-heading { display: flex; align-items: end; justify-content: space-between; gap: 34px; padding: 30px; border-bottom: 1px solid #d5d6cf; }
+.credit-heading .eyebrow { margin: 0 0 9px; }
+.credit-heading h2 { font: 500 32px/1.05 Georgia, serif; margin: 0; }
+.credit-heading p:last-child { color: var(--muted); max-width: 650px; font-size: 11px; line-height: 1.55; margin: 12px 0 0; }
+.credit-heading button { flex: none; min-height: 42px; border: 1px solid var(--forest); background: transparent; color: var(--forest); padding: 0 16px; font-size: 10px; font-weight: 700; }
+.credit-heading button span { color: var(--gold-dark); margin-left: 9px; }
+.credit-heading button:hover { background: var(--forest); color: white; }
+.credit-layout { display: grid; grid-template-columns: minmax(0, 1.12fr) minmax(390px, .88fr); }
+.credit-form-card { padding: 28px 30px 30px; }
+.credit-base-value { border-left: 3px solid var(--gold); background: #f0efe8; padding: 17px 19px; }
+.credit-base-value > span, .credit-fixed-field > span, .credit-result-topline { color: #777d79; font-size: 8px; font-weight: 750; letter-spacing: .13em; }
+.credit-base-value strong { color: var(--forest); display: block; font: 500 25px/1.1 Georgia, serif; margin-top: 8px; }
+.credit-base-value small { color: var(--muted); display: block; font-size: 8px; margin-top: 6px; }
+.credit-input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 12px; margin-top: 23px; }
+.credit-fixed-field { min-height: 82px; border: 1px solid #ced1cd; padding: 14px 15px; display: flex; flex-direction: column; justify-content: center; }
+.credit-fixed-field strong { color: var(--forest); font: 500 19px Georgia, serif; margin-top: 6px; }
+.credit-fixed-field small { color: var(--muted); font-size: 8px; margin-top: 5px; }
+.down-payment-range { display: block; border-top: 1px solid #dedfd9; margin-top: 22px; padding-top: 18px; }
+.down-payment-range > span { display: grid; grid-template-columns: 1fr auto auto; gap: 15px; align-items: center; color: var(--muted); font-size: 8px; }
+.down-payment-range b { color: var(--ink); font-size: 10px; }
+.down-payment-range input { width: 100%; accent-color: var(--forest); margin: 12px 0 0; }
+.credit-result { background: #eceae1; border-left: 1px solid #d5d6cf; padding: 27px 29px; }
+.credit-result-topline { display: flex; justify-content: space-between; }
+.credit-result-topline small { color: var(--forest); font-size: 8px; font-weight: 750; letter-spacing: .1em; }
+.monthly-payment { padding: 25px 0 23px; border-bottom: 1px solid #cccec8; }
+.monthly-payment > span { color: var(--muted); display: block; font-size: 8px; letter-spacing: .12em; }
+.monthly-payment strong { color: var(--forest); display: block; font: 500 35px/1 Georgia, serif; margin-top: 9px; }
+.monthly-payment small { color: var(--muted); display: block; font-size: 8px; margin-top: 8px; }
+.credit-result dl { margin: 12px 0 0; }
+.credit-result dl > div { display: flex; align-items: center; justify-content: space-between; gap: 20px; border-bottom: 1px solid #d4d5cf; padding: 10px 0; }
+.credit-result dt { color: var(--muted); font-size: 9px; }
+.credit-result dd { color: var(--ink); margin: 0; font: 500 12px Georgia, serif; white-space: nowrap; }
+.credit-grand-total { border-top: 2px solid var(--forest); margin-top: 18px; padding-top: 17px; }
+.credit-grand-total > span { color: var(--muted); display: block; font-size: 8px; letter-spacing: .11em; }
+.credit-grand-total strong { color: var(--forest); display: block; font: 500 23px Georgia, serif; margin-top: 7px; }
+.credit-grand-total small { color: var(--muted); display: block; font-size: 8px; margin-top: 5px; }
+.credit-result > p { color: #777d79; font-size: 8px; line-height: 1.5; margin: 18px 0 0; }
 .simulator-legal { margin-top: 18px; background: var(--card); border: 1px solid #d5d6cf; padding: 30px; display: grid; grid-template-columns: 1.05fr .95fr; gap: 70px; }
 .simulator-legal .eyebrow { margin-bottom: 11px; }
 .simulator-legal h2 { font: 500 30px/1.1 Georgia, serif; margin: 0; }
@@ -353,6 +391,8 @@ footer > span:last-child { text-align: right; }
   .vehicle-intro { grid-template-columns: 1fr; gap: 28px; }
   .simulator-layout { grid-template-columns: 1fr; }
   .simulation-result { position: static; }
+  .credit-layout { grid-template-columns: 1fr; }
+  .credit-result { border-left: 0; border-top: 1px solid #d5d6cf; }
   .simulator-legal { gap: 35px; }
 }
 
@@ -425,17 +465,26 @@ footer > span:last-child { text-align: right; }
   .cif-lines > div + div { border-left: 0; border-top: 1px solid #dedfd9; padding: 13px 0 0; }
   .simulation-result { padding: 23px 20px; }
   .result-total > span { align-items: flex-start; flex-direction: column; gap: 5px; }
+  .credit-heading { align-items: stretch; flex-direction: column; padding: 23px 20px; }
+  .credit-heading button { width: 100%; }
+  .credit-form-card, .credit-result { padding: 23px 20px; }
+  .credit-input-grid { grid-template-columns: 1fr; }
   .simulator-legal { grid-template-columns: 1fr; padding: 23px 20px; gap: 26px; }
 }
 
 @media print {
-  .topbar, .vehicle-intro, .vehicle-group-tabs, .vehicle-showcase, .simulator-form-card, .simulator-legal, footer { display: none !important; }
+  .topbar, .vehicle-intro, .vehicle-group-tabs, .vehicle-showcase, .simulator-form-card, .credit-heading button, .credit-form-card, .simulator-legal, footer { display: none !important; }
   .vehicle-page { padding: 0; max-width: 760px; }
   .simulator-layout { display: block; }
   .simulation-result { position: static; background: white; color: #111; border: 1px solid #bbb; }
   .result-topline, .result-topline button, .selected-tariff small, .selected-tariff > span, .tax-breakdown dt small, .result-total small, .result-disclaimer { color: #555; }
   .tax-breakdown > div, .selected-tariff { border-color: #ddd; }
   .selected-tariff code, .electric-benefit strong { color: #111; }
+  .credit-simulator { margin-top: 14px; break-inside: avoid; }
+  .credit-heading { padding: 18px 20px; }
+  .credit-heading h2 { font-size: 25px; }
+  .credit-layout { display: block; }
+  .credit-result { border: 0; border-top: 1px solid #bbb; background: white; padding: 20px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
