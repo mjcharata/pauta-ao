@@ -349,8 +349,8 @@ export default function Home() {
         <a className="brand" href="#top" aria-label="Pauta AO — página inicial" onClick={() => setView("search")}>
           <span className="brand-mark">PA</span>
           <span>
-            <strong>Pauta AO</strong>
-            <small>Comércio exterior</small>
+            <strong>Pauta AO <span className="brand-country-flag" aria-hidden="true">🇦🇴</span></strong>
+            <small>Comércio exterior · Angola</small>
           </span>
         </a>
         <nav className="main-nav" aria-label="Navegação principal">
@@ -361,7 +361,10 @@ export default function Home() {
             <span>Simulador de viaturas</span>
           </button>
         </nav>
-        <div className="edition-pill"><span /> Taxas actualizadas · OGE 2026</div>
+        <div className="edition-pill" aria-label="Aplicação exclusiva para Angola">
+          <span className="angola-flag" aria-hidden="true">🇦🇴</span>
+          <span className="edition-copy"><strong>Exclusivo para Angola</strong><small>Taxas actualizadas · OGE 2026</small></span>
+        </div>
       </header>
 
       {view === "search" ? (
@@ -551,7 +554,7 @@ export default function Home() {
       )}
 
       <footer>
-        <div className="brand footer-brand"><span className="brand-mark">PA</span><span><strong>Pauta AO</strong><small>Consulta aduaneira simplificada</small></span></div>
+        <div className="brand footer-brand"><span className="brand-mark">PA</span><span><strong>Pauta AO <span className="brand-country-flag" aria-hidden="true">🇦🇴</span></strong><small>Consulta aduaneira de Angola</small></span></div>
         <p>Base: DLP n.º 1/24 · Taxas actualizadas pela Lei n.º 14/25 (OGE 2026).</p>
         <span className="creator-credit">
           Criado por <a href="https://www.linkedin.com/in/mjcharata/" target="_blank" rel="noreferrer">Márcio Charata · LinkedIn ↗</a>

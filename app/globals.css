@@ -26,6 +26,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .brand-mark::after { content: ""; width: 5px; height: 5px; background: var(--gold); position: absolute; right: -3px; bottom: -3px; }
 .brand strong { display: block; font: 700 17px/1.1 Georgia, serif; }
 .brand small { display: block; margin-top: 4px; color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: .12em; }
+.brand-country-flag { display: inline; font: 400 15px/1 system-ui, sans-serif; margin-left: 5px; vertical-align: 1px; }
 .main-nav { display: flex; gap: 28px; height: 100%; }
 .main-nav button { position: relative; border: 0; background: transparent; color: #69716c; font-size: 14px; padding: 0; }
 .main-nav button.active { color: var(--ink); font-weight: 650; }
@@ -38,8 +39,11 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .main-nav .vehicle-nav.active::after { display: none; }
 .vehicle-nav-badge { color: #755a27; background: #d9c28f; padding: 4px 5px 3px; font-size: 7px; line-height: 1; letter-spacing: .12em; text-transform: uppercase; }
 .vehicle-nav:hover .vehicle-nav-badge, .vehicle-nav.active .vehicle-nav-badge { color: var(--forest); background: #d8bd7c; }
-.edition-pill { justify-self: end; display: flex; align-items: center; gap: 8px; color: var(--forest); font-size: 12px; border: 1px solid #cdd7d1; border-radius: 999px; padding: 8px 12px; background: rgba(255,255,255,.42); }
-.edition-pill span { width: 6px; height: 6px; border-radius: 50%; background: #4d7a61; box-shadow: 0 0 0 4px rgba(77,122,97,.1); }
+.edition-pill { justify-self: end; display: flex; align-items: center; gap: 9px; color: var(--forest); border: 1px solid #cdd7d1; border-radius: 999px; padding: 7px 12px 7px 9px; background: rgba(255,255,255,.42); }
+.angola-flag { font-size: 20px; line-height: 1; }
+.edition-copy { display: flex; flex-direction: column; gap: 2px; }
+.edition-copy strong { font-size: 10px; line-height: 1; }
+.edition-copy small { color: var(--muted); font-size: 8px; line-height: 1; }
 
 .hero { max-width: 1240px; margin: 0 auto; padding: 82px 28px 42px; display: grid; grid-template-columns: .82fr 1.18fr; gap: 74px; align-items: end; position: relative; }
 .hero::before { content: "AO"; position: absolute; right: 38px; top: 26px; color: rgba(24,62,49,.035); font: 700 180px/1 Georgia, serif; z-index: -1; }

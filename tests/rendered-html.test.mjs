@@ -28,6 +28,8 @@ test("renders the customs tariff experience", async () => {
   assert.match(html, /NOVA, usada ou eléctrica/i);
   assert.match(html, /class="search-submit">Pesquisar/);
   assert.match(html, /OGE 2026/);
+  assert.match(html, /Exclusivo para Angola/);
+  assert.match(html, /🇦🇴/);
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton/i);
 });
 

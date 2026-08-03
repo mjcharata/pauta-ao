@@ -6,5 +6,9 @@ const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const source = resolve(projectRoot, ".openai", "hosting.json");
 const destination = resolve(projectRoot, "dist", ".openai", "hosting.json");
 
-await mkdir(dirname(destination), { recursive: true });
-await copyFile(source, destination);
+try {
+  await mkdir(dirname(destination), { recursive: true });
+  await copyFile(source, destination);
+} catch (error) {
+  if (!(error instanceof Error) || !("code" in error) || error.code !== "ENOENT") throw error;
+}
