@@ -51,6 +51,7 @@ test("configures the free Cloudflare Workers AI classifier", async () => {
   assert.deepEqual(wrangler.ai, { binding: "AI" });
   assert.match(routeSource, /@cf\/openai\/gpt-oss-20b/);
   assert.match(routeSource, /não conste|Não inventes códigos/);
+  assert.match(routeSource, /choices\?\.\[0\]\?\.message\?\.content/);
   assert.match(pageSource, /Cloudflare AI gratuita/);
   assert.match(pageSource, /GPT-OSS 20B/);
 });

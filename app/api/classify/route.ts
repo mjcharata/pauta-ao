@@ -98,6 +98,24 @@ function extractJson(value: unknown): { results?: ModelResult[] } {
   return JSON.parse(cleaned.slice(start, end + 1)) as { results?: ModelResult[] };
 }
 
+function modelContentFrom(response: unknown): unknown {
+  if (typeof response === "string") return response;
+  if (!response || typeof response !== "object") return undefined;
+
+  const payload = response as {
+    response?: unknown;
+    output_text?: unknown;
+    choices?: Array<{ message?: { content?: unknown }; text?: unknown }>;
+    output?: Array<{ content?: Array<{ text?: unknown }> }>;
+  };
+
+  return payload.response
+    ?? payload.output_text
+    ?? payload.choices?.[0]?.message?.content
+    ?? payload.choices?.[0]?.text
+    ?? payload.output?.flatMap((item) => item.content ?? []).find((item) => typeof item.text === "string")?.text;
+}
+
 function validateResults(
   payload: { results?: ModelResult[] },
   products: string[],
@@ -198,9 +216,9 @@ export async function POST(request: Request) {
           required: ["results"],
         },
       },
-    })) as { response?: unknown } | string;
+    })) as unknown;
 
-    const modelContent = typeof response === "string" ? response : response.response;
+    const modelContent = modelContentFrom(response);
     const results = validateResults(extractJson(modelContent), products, contexts);
     return Response.json({ results, provider: "workers-ai", model: MODEL });
   } catch (error) {
