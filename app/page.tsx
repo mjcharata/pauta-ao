@@ -226,6 +226,11 @@ export default function Home() {
     setView("classify");
   }
 
+  function openVehicleSimulator() {
+    setView("vehicles");
+    window.requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "smooth" }));
+  }
+
   function exportTariff() {
     downloadExcel(
       filtered.map((record) => ({
@@ -351,7 +356,10 @@ export default function Home() {
         <nav className="main-nav" aria-label="Navegação principal">
           <button className={view === "search" ? "active" : ""} onClick={() => setView("search")}>Pesquisa</button>
           <button className={`ai-nav ${view === "classify" ? "active" : ""}`} onClick={openAISearch}><span aria-hidden="true" /> Pesquisa com IA</button>
-          <button className={`vehicle-nav ${view === "vehicles" ? "active" : ""}`} onClick={() => setView("vehicles")}>Simulador de viaturas</button>
+          <button className={`vehicle-nav ${view === "vehicles" ? "active" : ""}`} onClick={openVehicleSimulator}>
+            <span className="vehicle-nav-badge">Novo</span>
+            <span>Simulador de viaturas</span>
+          </button>
         </nav>
         <div className="edition-pill"><span /> Taxas actualizadas · OGE 2026</div>
       </header>
@@ -363,6 +371,15 @@ export default function Home() {
               <p className="eyebrow">PAUTA ADUANEIRA DE ANGOLA · SH 2022</p>
               <h1>Encontre o código certo.<br />Com clareza.</h1>
               <p className="hero-lede">Pesquise por mercadoria ou código pautal e consulte os direitos de importação actualizados pelo OGE 2026.</p>
+              <button className="vehicle-hero-cta" onClick={openVehicleSimulator}>
+                <span className="vehicle-hero-mark" aria-hidden="true">SV</span>
+                <span className="vehicle-hero-copy">
+                  <small>NOVO · SIMULADOR DE IMPORTAÇÃO 2026</small>
+                  <strong>Calcule os custos da sua viatura</strong>
+                  <span>Nova, usada ou eléctrica · automóvel, moto, barco ou aeronave</span>
+                </span>
+                <b aria-hidden="true">→</b>
+              </button>
             </div>
             <div className="search-card">
               <label htmlFor="tariff-search">O que pretende importar?</label>
