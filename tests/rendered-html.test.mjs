@@ -60,9 +60,17 @@ test("includes the 2026 vehicle import simulator and its legal safeguards", asyn
   assert.match(simulatorSource, /Crédito automóvel/);
   assert.match(simulatorSource, /CREDIT_ANNUAL_RATE = 0\.25/);
   assert.match(simulatorSource, /CREDIT_MAX_MONTHS = 60/);
-  assert.match(simulatorSource, /CREDIT_ANNUAL_RATE \/ 12/);
+  assert.match(simulatorSource, /appliedAnnualRate \/ 12/);
   assert.match(simulatorSource, /Valor residual/);
   assert.match(simulatorSource, /Imprimir simulação completa/);
+  assert.match(simulatorSource, /Editar capital/);
+  assert.match(simulatorSource, /Editar taxa/);
+  assert.match(simulatorSource, /Simulação mensal detalhada/);
+  assert.match(simulatorSource, /Saldo inicial/);
+  assert.match(simulatorSource, /Capital/);
+  assert.match(simulatorSource, /Juros/);
+  assert.match(simulatorSource, /CUSTO FINAL PARA A EMPRESA/);
+  assert.match(simulatorSource, /Array\.from\(\{ length: loanTermMonths \}/);
   assert.equal(vehicleImage.subarray(0, 2).toString("hex"), "ffd8");
   assert.ok(vehicleImage.byteLength > 100_000);
   assert.match(exchangeRoute, /www\.bna\.ao\/service\/rest\/taxas\/conversor\/moeda/);

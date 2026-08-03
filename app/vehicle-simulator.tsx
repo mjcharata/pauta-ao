@@ -6,6 +6,7 @@ type VehicleGroup = "road" | "motorcycle" | "marine" | "air";
 type VehicleCondition = "new" | "used";
 type RoadClass = "light" | "heavy" | "motorcycle" | "trailer" | "special";
 type ExchangeStatus = "loading" | "official" | "manual" | "error";
+type AmortizationRow = { month: number; openingBalance: number; capital: number; interest: number; payment: number; closingBalance: number };
 
 type VehicleVariant = {
   id: string;
@@ -189,6 +190,11 @@ export default function VehicleSimulator() {
   const [insurance, setInsurance] = useState(250);
   const [downPaymentPercent, setDownPaymentPercent] = useState(20);
   const [loanTermMonths, setLoanTermMonths] = useState(CREDIT_MAX_MONTHS);
+  const [customPrincipalEnabled, setCustomPrincipalEnabled] = useState(false);
+  const [customPrincipal, setCustomPrincipal] = useState(0);
+  const [customRateEnabled, setCustomRateEnabled] = useState(false);
+  const [annualInterestRate, setAnnualInterestRate] = useState(CREDIT_ANNUAL_RATE * 100);
+  const [showAmortization, setShowAmortization] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -258,22 +264,39 @@ export default function VehicleSimulator() {
   const exceedsAge = condition === "used" && maxUsedAge !== undefined && usedAge > maxUsedAge;
   const credit = (() => {
     const downPayment = Math.min(calculation.landedValue, Math.max(0, calculation.landedValue * downPaymentPercent / 100));
-    const financedAmount = Math.max(0, calculation.landedValue - downPayment);
-    const monthlyRate = CREDIT_ANNUAL_RATE / 12;
+    const standardFinancedAmount = Math.max(0, calculation.landedValue - downPayment);
+    const financedAmount = customPrincipalEnabled ? Math.max(0, customPrincipal) : standardFinancedAmount;
+    const appliedAnnualRate = Math.max(0, customRateEnabled ? annualInterestRate / 100 : CREDIT_ANNUAL_RATE);
+    const monthlyRate = appliedAnnualRate / 12;
     const monthlyPayment = financedAmount > 0
-      ? financedAmount * monthlyRate / (1 - Math.pow(1 + monthlyRate, -loanTermMonths))
+      ? monthlyRate > 0
+        ? financedAmount * monthlyRate / (1 - Math.pow(1 + monthlyRate, -loanTermMonths))
+        : financedAmount / loanTermMonths
       : 0;
-    const installmentsTotal = monthlyPayment * loanTermMonths;
+    const schedule = Array.from({ length: loanTermMonths }).reduce<{ balance: number; rows: AmortizationRow[] }>((state, _, index) => {
+      const openingBalance = state.balance;
+      const interest = openingBalance * monthlyRate;
+      const capital = index === loanTermMonths - 1 ? openingBalance : Math.min(openingBalance, Math.max(0, monthlyPayment - interest));
+      const payment = capital + interest;
+      const closingBalance = Math.max(0, openingBalance - capital);
+      return { balance: closingBalance, rows: [...state.rows, { month: index + 1, openingBalance, capital, interest, payment, closingBalance }] };
+    }, { balance: financedAmount, rows: [] }).rows;
+    const installmentsTotal = schedule.reduce((total, row) => total + row.payment, 0);
+    const interestTotal = schedule.reduce((total, row) => total + row.interest, 0);
     return {
       downPayment,
+      standardFinancedAmount,
       financedAmount,
+      appliedAnnualRate,
       monthlyRate,
       monthlyPayment,
       installmentsTotal,
-      interestTotal: Math.max(0, installmentsTotal - financedAmount),
+      interestTotal,
       totalWithCredit: downPayment + installmentsTotal,
+      schedule,
     };
   })();
+  const companyChargesTotal = (customPrincipalEnabled ? 0 : calculation.totalCharges) + credit.interestTotal;
 
   function selectGroup(nextGroup: VehicleGroup) {
     setGroup(nextGroup);
@@ -420,7 +443,7 @@ export default function VehicleSimulator() {
           <div>
             <p className="eyebrow">SIMULAÇÃO FINANCEIRA</p>
             <h2 id="credit-simulator-title">Crédito automóvel</h2>
-            <p>Calcule uma prestação indicativa sobre o custo final da importação, com taxa anual média de 25% e valor residual zero.</p>
+            <p>Calcule uma prestação indicativa sobre o custo final da importação. A taxa média de 25% e o capital podem ser personalizados para outras simulações.</p>
           </div>
           <button type="button" onClick={() => window.print()}>Imprimir simulação completa <span aria-hidden="true">↗</span></button>
         </div>
@@ -434,6 +457,15 @@ export default function VehicleSimulator() {
             </div>
 
             <div className="credit-input-grid">
+              <div className={`credit-edit-field credit-principal-field ${customPrincipalEnabled ? "active" : ""}`}>
+                <div className="credit-edit-heading">
+                  <span>CAPITAL DO EMPRÉSTIMO</span>
+                  <label><input type="checkbox" checked={customPrincipalEnabled} onChange={(event) => { const enabled = event.target.checked; if (enabled) setCustomPrincipal(Math.round(credit.standardFinancedAmount)); setCustomPrincipalEnabled(enabled); }} /><span>Editar capital</span></label>
+                </div>
+                <div className="credit-edit-input"><input aria-label="Capital do empréstimo" type="number" min="0" step="10000" value={Math.round(customPrincipalEnabled ? customPrincipal : credit.standardFinancedAmount)} disabled={!customPrincipalEnabled} onChange={(event) => setCustomPrincipal(Math.max(0, Number(event.target.value)))} /><b>AOA</b></div>
+                <small>{customPrincipalEnabled ? "Capital independente do preço da viatura; adequado a outras finalidades." : "Calculado automaticamente: preço final menos entrada."}</small>
+              </div>
+
               <label className="simulator-field">
                 <span>Valor da entrada</span>
                 <div className="money-input"><input type="number" min="0" max={Math.round(calculation.landedValue)} step="10000" value={Math.round(credit.downPayment)} disabled={!exchangeReady} onChange={(event) => { const amount = Number(event.target.value); setDownPaymentPercent(calculation.landedValue > 0 ? Math.min(100, Math.max(0, amount / calculation.landedValue * 100)) : 0); }} /><b>AOA</b></div>
@@ -448,10 +480,13 @@ export default function VehicleSimulator() {
                 <small>Prazo máximo de 5 anos.</small>
               </label>
 
-              <div className="credit-fixed-field">
-                <span>TAXA ANUAL MÉDIA</span>
-                <strong>25%</strong>
-                <small>Taxa nominal usada na estimativa.</small>
+              <div className={`credit-edit-field ${customRateEnabled ? "active" : ""}`}>
+                <div className="credit-edit-heading">
+                  <span>TAXA ANUAL NOMINAL</span>
+                  <label><input type="checkbox" checked={customRateEnabled} onChange={(event) => setCustomRateEnabled(event.target.checked)} /><span>Editar taxa</span></label>
+                </div>
+                <div className="credit-edit-input rate"><input aria-label="Taxa de juro anual" type="number" min="0" max="200" step="0.1" value={customRateEnabled ? annualInterestRate : CREDIT_ANNUAL_RATE * 100} disabled={!customRateEnabled} onChange={(event) => setAnnualInterestRate(Math.min(200, Math.max(0, Number(event.target.value))))} /><b>%</b></div>
+                <small>{customRateEnabled ? "Taxa personalizada aplicada à simulação." : "Taxa média de referência: 25% ao ano."}</small>
               </div>
 
               <div className="credit-fixed-field">
@@ -469,7 +504,7 @@ export default function VehicleSimulator() {
 
           <aside className="credit-result" aria-live="polite">
             <div className="credit-result-topline"><span>PLANO ESTIMADO</span><small>{loanTermMonths} PRESTAÇÕES</small></div>
-            <div className="monthly-payment"><span>PRESTAÇÃO MENSAL</span><strong>{formatKz(credit.monthlyPayment)}</strong><small>Taxa mensal nominal: {(credit.monthlyRate * 100).toLocaleString("pt-AO", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%</small></div>
+            <div className="monthly-payment"><span>PRESTAÇÃO MENSAL</span><strong>{formatKz(credit.monthlyPayment)}</strong><small>Taxa anual: {(credit.appliedAnnualRate * 100).toLocaleString("pt-AO", { maximumFractionDigits: 2 })}% · taxa mensal nominal: {(credit.monthlyRate * 100).toLocaleString("pt-AO", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%</small></div>
             <dl>
               <div><dt>Entrada</dt><dd>{formatKz(credit.downPayment)}</dd></div>
               <div><dt>Montante financiado</dt><dd>{formatKz(credit.financedAmount)}</dd></div>
@@ -477,10 +512,26 @@ export default function VehicleSimulator() {
               <div><dt>Juros estimados</dt><dd>{formatKz(credit.interestTotal)}</dd></div>
               <div><dt>Valor residual</dt><dd>0 Kz</dd></div>
             </dl>
-            <div className="credit-grand-total"><span>CUSTO TOTAL COM CRÉDITO</span><strong>{formatKz(credit.totalWithCredit)}</strong><small>Entrada + {loanTermMonths} prestações mensais.</small></div>
+            <div className="company-charges-total"><span>ENCARGOS TOTAIS CALCULADOS</span><strong>{formatKz(companyChargesTotal)}</strong><small>{customPrincipalEnabled ? "Juros do financiamento personalizado." : "Impostos e encargos de importação + juros do financiamento."}</small></div>
+            <div className="credit-grand-total"><span>CUSTO FINAL PARA A EMPRESA</span><strong>{formatKz(credit.totalWithCredit)}</strong><small>Entrada + {loanTermMonths} prestações mensais.</small></div>
+            <button type="button" className="amortization-toggle" aria-expanded={showAmortization} aria-controls="amortization-schedule" onClick={() => setShowAmortization((current) => !current)}><span>{showAmortization ? "Ocultar" : "Mostrar"} simulação mensal detalhada</span><b aria-hidden="true">{showAmortization ? "↑" : "↓"}</b></button>
             <p>Simulação meramente indicativa. Não inclui comissões bancárias, imposto de selo do crédito, seguros, avaliação, abertura do processo ou outras despesas. A aprovação e a taxa efectiva dependem da instituição financeira.</p>
           </aside>
         </div>
+
+        <section id="amortization-schedule" className={`amortization-panel ${showAmortization ? "open" : ""}`} aria-hidden={!showAmortization}>
+          <div className="amortization-heading">
+            <div><span>MAPA DE AMORTIZAÇÃO</span><h3>Simulação mensal detalhada</h3><p>Separação mensal entre capital amortizado, juros, prestação e saldo em dívida.</p></div>
+            <div><small>TOTAL FINANCIADO</small><strong>{formatKz(credit.financedAmount)}</strong></div>
+          </div>
+          <div className="amortization-table-wrap">
+            <table>
+              <thead><tr><th>Mês</th><th>Saldo inicial</th><th>Capital</th><th>Juros</th><th>Prestação</th><th>Saldo final</th></tr></thead>
+              <tbody>{credit.schedule.map((row) => <tr key={row.month}><td>{String(row.month).padStart(2, "0")}</td><td>{formatKz(row.openingBalance)}</td><td>{formatKz(row.capital)}</td><td>{formatKz(row.interest)}</td><td>{formatKz(row.payment)}</td><td>{formatKz(row.closingBalance)}</td></tr>)}</tbody>
+              <tfoot><tr><th colSpan={2}>Totais do financiamento</th><td>{formatKz(credit.financedAmount)}</td><td>{formatKz(credit.interestTotal)}</td><td>{formatKz(credit.installmentsTotal)}</td><td>0 Kz</td></tr></tfoot>
+            </table>
+          </div>
+        </section>
       </section>
 
       <section className="simulator-legal">

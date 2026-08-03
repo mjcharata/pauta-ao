@@ -312,6 +312,18 @@ td code { color: var(--forest); font-size: 13px; font-weight: 700; letter-spacin
 .credit-base-value strong { color: var(--forest); display: block; font: 500 25px/1.1 Georgia, serif; margin-top: 8px; }
 .credit-base-value small { color: var(--muted); display: block; font-size: 8px; margin-top: 6px; }
 .credit-input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 12px; margin-top: 23px; }
+.credit-principal-field { grid-column: 1 / -1; }
+.credit-edit-field { min-height: 82px; border: 1px solid #ced1cd; padding: 12px 14px; background: #f7f6f1; }
+.credit-edit-field.active { border-left: 3px solid var(--gold); background: white; }
+.credit-edit-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.credit-edit-heading > span { color: #777d79; font-size: 8px; font-weight: 750; letter-spacing: .13em; }
+.credit-edit-heading label { display: inline-flex; align-items: center; gap: 6px; color: var(--forest); font-size: 8px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+.credit-edit-heading input { width: 14px; height: 14px; accent-color: var(--forest); }
+.credit-edit-input { height: 34px; display: flex; align-items: center; border-bottom: 1px solid #bfc4bf; margin-top: 6px; }
+.credit-edit-input input { width: 100%; min-width: 0; border: 0; outline: 0; background: transparent; color: var(--forest); font: 500 18px Georgia, serif; }
+.credit-edit-input input:disabled { color: #7c837e; }
+.credit-edit-input b { color: #7c837e; font-size: 8px; }
+.credit-edit-field > small { color: var(--muted); display: block; font-size: 8px; line-height: 1.35; margin-top: 6px; }
 .credit-fixed-field { min-height: 82px; border: 1px solid #ced1cd; padding: 14px 15px; display: flex; flex-direction: column; justify-content: center; }
 .credit-fixed-field strong { color: var(--forest); font: 500 19px Georgia, serif; margin-top: 6px; }
 .credit-fixed-field small { color: var(--muted); font-size: 8px; margin-top: 5px; }
@@ -330,11 +342,36 @@ td code { color: var(--forest); font-size: 13px; font-weight: 700; letter-spacin
 .credit-result dl > div { display: flex; align-items: center; justify-content: space-between; gap: 20px; border-bottom: 1px solid #d4d5cf; padding: 10px 0; }
 .credit-result dt { color: var(--muted); font-size: 9px; }
 .credit-result dd { color: var(--ink); margin: 0; font: 500 12px Georgia, serif; white-space: nowrap; }
+.company-charges-total { border-left: 2px solid var(--gold); background: rgba(184,150,85,.1); margin-top: 18px; padding: 13px 15px; }
+.company-charges-total > span { color: var(--muted); display: block; font-size: 8px; letter-spacing: .11em; }
+.company-charges-total strong { color: var(--ink); display: block; font: 500 18px Georgia, serif; margin-top: 6px; }
+.company-charges-total small { color: var(--muted); display: block; font-size: 8px; line-height: 1.4; margin-top: 5px; }
 .credit-grand-total { border-top: 2px solid var(--forest); margin-top: 18px; padding-top: 17px; }
 .credit-grand-total > span { color: var(--muted); display: block; font-size: 8px; letter-spacing: .11em; }
 .credit-grand-total strong { color: var(--forest); display: block; font: 500 23px Georgia, serif; margin-top: 7px; }
 .credit-grand-total small { color: var(--muted); display: block; font-size: 8px; margin-top: 5px; }
+.amortization-toggle { width: 100%; min-height: 43px; display: flex; align-items: center; justify-content: space-between; gap: 14px; border: 1px solid var(--forest); background: var(--forest); color: white; padding: 0 14px; margin-top: 18px; font-size: 9px; font-weight: 700; }
+.amortization-toggle b { color: var(--gold); font-size: 13px; }
+.amortization-toggle:hover { background: #0e3b2d; }
 .credit-result > p { color: #777d79; font-size: 8px; line-height: 1.5; margin: 18px 0 0; }
+.amortization-panel { display: none; border-top: 1px solid #d5d6cf; background: white; }
+.amortization-panel.open { display: block; }
+.amortization-heading { display: flex; align-items: end; justify-content: space-between; gap: 28px; padding: 25px 30px; }
+.amortization-heading > div:first-child > span { color: var(--gold-dark); font-size: 8px; font-weight: 750; letter-spacing: .14em; }
+.amortization-heading h3 { font: 500 25px/1.05 Georgia, serif; margin: 8px 0 0; }
+.amortization-heading p { color: var(--muted); font-size: 9px; margin: 8px 0 0; }
+.amortization-heading > div:last-child { text-align: right; }
+.amortization-heading > div:last-child small { color: var(--muted); display: block; font-size: 8px; letter-spacing: .1em; }
+.amortization-heading > div:last-child strong { color: var(--forest); display: block; font: 500 18px Georgia, serif; margin-top: 6px; }
+.amortization-table-wrap { overflow-x: auto; border-top: 1px solid #dedfd9; }
+.amortization-table-wrap table { width: 100%; border-collapse: collapse; font-size: 9px; }
+.amortization-table-wrap th, .amortization-table-wrap td { padding: 11px 14px; border-bottom: 1px solid #e2e3de; text-align: right; white-space: nowrap; }
+.amortization-table-wrap th:first-child, .amortization-table-wrap td:first-child { text-align: left; padding-left: 30px; }
+.amortization-table-wrap th:last-child, .amortization-table-wrap td:last-child { padding-right: 30px; }
+.amortization-table-wrap thead th { color: var(--muted); background: #f0efe9; font-size: 8px; letter-spacing: .08em; text-transform: uppercase; }
+.amortization-table-wrap tbody tr:nth-child(even) { background: #faf9f5; }
+.amortization-table-wrap tbody td:nth-child(3), .amortization-table-wrap tbody td:nth-child(4) { color: var(--forest); }
+.amortization-table-wrap tfoot th, .amortization-table-wrap tfoot td { color: white; background: var(--forest); border: 0; font-weight: 700; }
 .simulator-legal { margin-top: 18px; background: var(--card); border: 1px solid #d5d6cf; padding: 30px; display: grid; grid-template-columns: 1.05fr .95fr; gap: 70px; }
 .simulator-legal .eyebrow { margin-bottom: 11px; }
 .simulator-legal h2 { font: 500 30px/1.1 Georgia, serif; margin: 0; }
@@ -471,22 +508,36 @@ footer > span:last-child { text-align: right; }
   .credit-heading button { width: 100%; }
   .credit-form-card, .credit-result { padding: 23px 20px; }
   .credit-input-grid { grid-template-columns: 1fr; }
+  .credit-principal-field { grid-column: auto; }
+  .amortization-heading { align-items: flex-start; flex-direction: column; padding: 22px 20px; }
+  .amortization-heading > div:last-child { text-align: left; }
+  .amortization-table-wrap th:first-child, .amortization-table-wrap td:first-child { padding-left: 20px; }
+  .amortization-table-wrap th:last-child, .amortization-table-wrap td:last-child { padding-right: 20px; }
   .simulator-legal { grid-template-columns: 1fr; padding: 23px 20px; gap: 26px; }
 }
 
 @media print {
-  .topbar, .vehicle-intro, .vehicle-group-tabs, .vehicle-showcase, .simulator-form-card, .credit-heading button, .credit-form-card, .simulator-legal, footer { display: none !important; }
+  .topbar, .vehicle-intro, .vehicle-group-tabs, .vehicle-showcase, .simulator-form-card, .credit-heading button, .credit-form-card, .amortization-toggle, .simulator-legal, footer { display: none !important; }
   .vehicle-page { padding: 0; max-width: 760px; }
   .simulator-layout { display: block; }
   .simulation-result { position: static; background: white; color: #111; border: 1px solid #bbb; }
   .result-topline, .result-topline button, .selected-tariff small, .selected-tariff > span, .tax-breakdown dt small, .result-total small, .result-disclaimer { color: #555; }
   .tax-breakdown > div, .selected-tariff { border-color: #ddd; }
   .selected-tariff code, .electric-benefit strong { color: #111; }
-  .credit-simulator { margin-top: 14px; break-inside: avoid; }
+  .credit-simulator { margin-top: 14px; break-inside: auto; }
   .credit-heading { padding: 18px 20px; }
   .credit-heading h2 { font-size: 25px; }
   .credit-layout { display: block; }
   .credit-result { border: 0; border-top: 1px solid #bbb; background: white; padding: 20px; }
+  .amortization-panel { display: block !important; border-top: 1px solid #bbb; }
+  .amortization-heading { padding: 18px 20px; break-inside: avoid; }
+  .amortization-table-wrap { overflow: visible; }
+  .amortization-table-wrap thead { display: table-header-group; }
+  .amortization-table-wrap tfoot { display: table-footer-group; }
+  .amortization-table-wrap tr { break-inside: avoid; }
+  .amortization-table-wrap th, .amortization-table-wrap td { padding: 7px 8px; }
+  .amortization-table-wrap th:first-child, .amortization-table-wrap td:first-child { padding-left: 8px; }
+  .amortization-table-wrap th:last-child, .amortization-table-wrap td:last-child { padding-right: 8px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
