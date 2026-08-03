@@ -100,20 +100,45 @@ function extractJson(value: unknown): { results?: ModelResult[] } {
 
 function modelContentFrom(response: unknown): unknown {
   if (typeof response === "string") return response;
+  if (Array.isArray(response)) {
+    for (const item of response) {
+      const content = modelContentFrom(item);
+      if (content !== undefined) return content;
+    }
+    return undefined;
+  }
   if (!response || typeof response !== "object") return undefined;
 
   const payload = response as {
     response?: unknown;
+    result?: unknown;
+    data?: unknown;
+    content?: unknown;
+    text?: unknown;
+    message?: { content?: unknown };
     output_text?: unknown;
     choices?: Array<{ message?: { content?: unknown }; text?: unknown }>;
     output?: Array<{ content?: Array<{ text?: unknown }> }>;
   };
 
-  return payload.response
+  const direct = payload.response
+    ?? payload.content
+    ?? payload.text
+    ?? payload.message?.content
     ?? payload.output_text
     ?? payload.choices?.[0]?.message?.content
     ?? payload.choices?.[0]?.text
     ?? payload.output?.flatMap((item) => item.content ?? []).find((item) => typeof item.text === "string")?.text;
+  if (direct !== undefined) return direct;
+  if (payload.result !== undefined) return modelContentFrom(payload.result);
+  if (payload.data !== undefined) return modelContentFrom(payload.data);
+  return undefined;
+}
+
+function responseShape(response: unknown) {
+  if (Array.isArray(response)) return `array(${response.length})`;
+  if (response && typeof response === "object") return `campos: ${Object.keys(response).slice(0, 12).join(", ") || "nenhum"}`;
+  return typeof response;
 }
 
 function validateResults(
@@ -219,6 +244,9 @@ export async function POST(request: Request) {
     })) as unknown;
 
     const modelContent = modelContentFrom(response);
+    if (modelContent === undefined) {
+      throw new Error(`Formato de resposta não reconhecido (${responseShape(response)})`);
+    }
     const results = validateResults(extractJson(modelContent), products, contexts);
     return Response.json({ results, provider: "workers-ai", model: MODEL });
   } catch (error) {
