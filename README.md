@@ -9,7 +9,7 @@ Aplicação web para consulta da Pauta Aduaneira de Angola, com direitos de impo
 - Consulta da unidade de quantidade e página da fonte
 - Exportação da pauta completa ou filtrada para Excel
 - Download do PDF oficial completo da Pauta Aduaneira 2024
-- Simulador de importação de viaturas terrestres, motociclos, embarcações e aeronaves, com conversão da moeda original pela taxa oficial do BNA acrescida de spread de 3,5%, distinção entre novo e usado, benefícios dos eléctricos e cálculo de Direitos Aduaneiros, IEC, Emolumentos Gerais, Imposto de Selo, IVA e autorização ANTT quando aplicável
+- Simulador de importação de viaturas terrestres, motociclos, embarcações e aeronaves, com conversão da moeda original pela taxa oficial do BNA acrescida de spread de 9%, distinção entre novo e usado, benefícios dos eléctricos e cálculo de Direitos Aduaneiros, IEC, Emolumentos Gerais, Imposto de Selo, IVA e autorização ANTT quando aplicável
 - Classificação pautal de listas com até 50 produtos
 - Classificação avançada gratuita com Cloudflare Workers AI e `@cf/openai/gpt-oss-20b`
 - IA local gratuita, treinada sobre a nomenclatura pautal e executada no navegador

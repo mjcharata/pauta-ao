@@ -54,7 +54,7 @@ test("includes the 2026 vehicle import simulator and its legal safeguards", asyn
   assert.match(simulatorSource, /Lei n\.º 8\/22/);
   assert.match(simulatorSource, /DP n\.º 155\/20/);
   assert.match(simulatorSource, /Não inclui despachante/i);
-  assert.match(simulatorSource, /EXCHANGE_SPREAD = 0\.035/);
+  assert.match(simulatorSource, /EXCHANGE_SPREAD = 0\.09/);
   assert.match(simulatorSource, /Conversor oficial de moedas · BNA/);
   assert.match(simulatorSource, /Lexus LX 600/);
   assert.match(simulatorSource, /BMW R 1200 GS/);

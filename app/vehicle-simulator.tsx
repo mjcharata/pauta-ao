@@ -150,7 +150,7 @@ const CURRENCIES = [
   ["NAD", "Dólar namibiano"],
 ] as const;
 
-const EXCHANGE_SPREAD = 0.035;
+const EXCHANGE_SPREAD = 0.09;
 const CREDIT_ANNUAL_RATE = 0.25;
 const CREDIT_MAX_MONTHS = 60;
 
@@ -380,7 +380,7 @@ export default function VehicleSimulator() {
             </div>
           )}
 
-          <div className="value-heading exchange-heading"><span>02</span><div><strong>Conversão cambial</strong><small>Taxa oficial do conversor BNA com spread de 3,5%</small></div></div>
+          <div className="value-heading exchange-heading"><span>02</span><div><strong>Conversão cambial</strong><small>Taxa oficial do conversor BNA com spread de 9%</small></div></div>
           <div className="exchange-grid">
             <label className="simulator-field currency-field">
               <span>Moeda original</span>
@@ -395,7 +395,7 @@ export default function VehicleSimulator() {
                   <span>1 {currency} =</span>
                   <div><input aria-label={`Taxa BNA de ${currency} para AOA`} type="number" min="0" step="0.0001" value={bnaRate ?? ""} disabled={currency === "AOA" || exchangeStatus === "loading"} onChange={(event) => { setBnaRate(Number(event.target.value)); setBnaRateDate(""); setExchangeStatus("manual"); }} /><b>AOA</b></div>
                 </label>
-                <div className="spread-rate"><span>Spread aplicado</span><strong>+3,5%</strong><small>Taxa final: {exchangeReady ? `${formatExchangeRate(exchangeRate)} AOA` : "—"}</small></div>
+                <div className="spread-rate"><span>Spread aplicado</span><strong>+9%</strong><small>Taxa final: {exchangeReady ? `${formatExchangeRate(exchangeRate)} AOA` : "—"}</small></div>
               </div>
               <p>{exchangeStatus === "loading" ? "A consultar o conversor oficial do BNA…" : exchangeStatus === "error" ? "BNA indisponível. Introduza manualmente a taxa apresentada no conversor oficial." : exchangeStatus === "manual" ? "Taxa alterada manualmente. Confirme-a no portal do BNA." : currency === "AOA" ? "Sem conversão cambial." : `Cotação BNA de ${formatBnaDate(bnaRateDate)}.`}</p>
             </div>
@@ -416,7 +416,7 @@ export default function VehicleSimulator() {
         <aside className="simulation-result" aria-live="polite">
           <div className="result-topline"><span>ESTIMATIVA 2026</span><button onClick={() => window.print()}>Imprimir</button></div>
           {currency !== "AOA" && (
-            <div className="result-exchange"><span>CONVERSÃO CAMBIAL</span><strong>{formatOriginal(calculation.customsValueOriginal, currency)} → {exchangeReady ? formatKz(calculation.customsValue) : "—"}</strong><small>{exchangeReady ? `Taxa BNA ${formatExchangeRate(bnaRate ?? 0)} + spread 3,5% = ${formatExchangeRate(exchangeRate)} AOA` : "A aguardar uma taxa válida do BNA."}</small></div>
+            <div className="result-exchange"><span>CONVERSÃO CAMBIAL</span><strong>{formatOriginal(calculation.customsValueOriginal, currency)} → {exchangeReady ? formatKz(calculation.customsValue) : "—"}</strong><small>{exchangeReady ? `Taxa BNA ${formatExchangeRate(bnaRate ?? 0)} + spread 9% = ${formatExchangeRate(exchangeRate)} AOA` : "A aguardar uma taxa válida do BNA."}</small></div>
           )}
           <div className="selected-tariff"><small>CÓDIGO PAUTAL APLICADO</small><code>{selectedCode}</code><span>{vehicle.label} · {condition === "new" ? "Novo" : "Usado"}</span></div>
 
