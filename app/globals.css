@@ -205,6 +205,27 @@ td code { color: var(--forest); font-size: 13px; font-weight: 700; letter-spacin
 .simulator-card-heading > span, .value-heading > span { width: 33px; height: 33px; display: grid; place-items: center; border: 1px solid #cad0cc; color: var(--forest); font: 700 10px Georgia, serif; flex: none; }
 .simulator-card-heading strong, .value-heading strong { display: block; font-size: 14px; }
 .simulator-card-heading small, .value-heading small { display: block; color: var(--muted); font-size: 10px; margin-top: 4px; }
+.exchange-heading { margin-bottom: 16px; }
+.exchange-grid { display: grid; grid-template-columns: .72fr 1.28fr; gap: 10px; align-items: stretch; }
+.currency-field select { height: 100%; min-height: 102px; padding-right: 34px; }
+.exchange-rate-card { min-height: 102px; border: 1px solid #ced1cd; background: #f1f0ea; padding: 13px 15px 11px; }
+.exchange-rate-card.loading { opacity: .72; }
+.exchange-rate-card.error { border-left: 3px solid var(--danger); }
+.exchange-rate-card.manual { border-left: 3px solid var(--gold); }
+.exchange-rate-topline { display: flex; justify-content: space-between; gap: 12px; color: #757c77; font-size: 7px; font-weight: 750; letter-spacing: .1em; }
+.exchange-rate-topline a { color: var(--forest); font-size: 8px; letter-spacing: normal; text-decoration: none; white-space: nowrap; }
+.exchange-rate-topline a:hover { color: #8c6d32; }
+.exchange-rate-values { display: grid; grid-template-columns: minmax(0, 1.25fr) .75fr; gap: 13px; align-items: end; margin-top: 10px; }
+.exchange-rate-values label > span, .spread-rate > span { color: var(--muted); display: block; font-size: 8px; margin-bottom: 5px; }
+.exchange-rate-values label > div { height: 34px; display: flex; align-items: center; border-bottom: 1px solid #bfc4bf; }
+.exchange-rate-values input { width: 100%; min-width: 0; border: 0; outline: 0; background: transparent; color: var(--forest); font: 650 15px Georgia, serif; }
+.exchange-rate-values input:disabled { color: #7c837e; }
+.exchange-rate-values label b { color: #7c837e; font-size: 8px; }
+.spread-rate { border-left: 1px solid #d3d4cd; padding-left: 13px; }
+.spread-rate strong { color: var(--forest); font: 500 17px Georgia, serif; }
+.spread-rate small { color: var(--muted); display: block; font-size: 7px; line-height: 1.3; margin-top: 3px; }
+.exchange-rate-card > p { color: var(--muted); font-size: 7px; line-height: 1.4; margin: 8px 0 0; }
+.exchange-rate-card.error > p { color: var(--danger); }
 .simulator-field { display: flex; flex-direction: column; gap: 7px; }
 .simulator-field > span, .condition-field > span { color: #6f7671; font-size: 9px; font-weight: 750; letter-spacing: .1em; text-transform: uppercase; }
 .simulator-field select, .simulator-field input { width: 100%; height: 48px; border: 1px solid #ced1cd; border-radius: 0; background: white; color: var(--ink); padding: 0 13px; outline: 0; }
@@ -228,13 +249,20 @@ td code { color: var(--forest); font-size: 13px; font-weight: 700; letter-spacin
 .money-input { position: relative; }
 .money-input input { padding-right: 38px; }
 .money-input b { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #8d938f; font-size: 10px; }
-.cif-line { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #dedfd9; margin-top: 20px; padding-top: 18px; }
-.cif-line span { color: var(--muted); font-size: 10px; }
-.cif-line strong { font: 500 18px Georgia, serif; }
+.cif-lines { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid #dedfd9; margin-top: 20px; padding-top: 18px; }
+.cif-lines > div { display: flex; flex-direction: column; gap: 6px; }
+.cif-lines > div + div { border-left: 1px solid #dedfd9; padding-left: 20px; }
+.cif-lines span { color: var(--muted); font-size: 9px; }
+.cif-lines strong { font: 500 17px Georgia, serif; }
+.converted-cif strong { color: var(--forest); }
 .simulation-result { background: var(--forest); color: white; border-top: 3px solid var(--gold); padding: 25px 27px 27px; position: sticky; top: 18px; }
 .result-topline { display: flex; align-items: center; justify-content: space-between; color: #cfb473; font-size: 9px; font-weight: 750; letter-spacing: .15em; }
 .result-topline button { border: 1px solid rgba(255,255,255,.24); color: white; background: transparent; padding: 7px 10px; font-size: 9px; letter-spacing: normal; }
 .result-topline button:hover { background: rgba(255,255,255,.08); }
+.result-exchange { margin-top: 18px; padding: 14px 15px; border: 1px solid rgba(216,189,124,.32); background: rgba(216,189,124,.08); }
+.result-exchange > span { color: #d4ba7b; display: block; font-size: 7px; font-weight: 750; letter-spacing: .13em; }
+.result-exchange strong { display: block; font: 500 13px/1.35 Georgia, serif; margin-top: 7px; }
+.result-exchange small { color: rgba(255,255,255,.56); display: block; font-size: 7px; line-height: 1.4; margin-top: 5px; }
 .selected-tariff { border-bottom: 1px solid rgba(255,255,255,.14); padding: 23px 0 21px; }
 .selected-tariff small { display: block; color: rgba(255,255,255,.52); font-size: 8px; letter-spacing: .13em; margin-bottom: 8px; }
 .selected-tariff code { color: white; font-size: 22px; font-weight: 700; }
@@ -374,7 +402,13 @@ footer > span:last-child { text-align: right; }
   .vehicle-group-tabs button { min-height: 55px; border-bottom: 1px solid #d9dad3; }
   .vehicle-group-tabs button:nth-child(2) { border-right: 0; }
   .simulator-form-card { padding: 21px 18px; }
+  .exchange-grid { grid-template-columns: 1fr; }
+  .currency-field select { min-height: 48px; }
+  .exchange-rate-values { grid-template-columns: 1fr; }
+  .spread-rate { border-left: 0; border-top: 1px solid #d3d4cd; padding: 10px 0 0; }
   .value-fields { grid-template-columns: 1fr; }
+  .cif-lines { grid-template-columns: 1fr; gap: 13px; }
+  .cif-lines > div + div { border-left: 0; border-top: 1px solid #dedfd9; padding: 13px 0 0; }
   .simulation-result { padding: 23px 20px; }
   .result-total > span { align-items: flex-start; flex-direction: column; gap: 5px; }
   .simulator-legal { grid-template-columns: 1fr; padding: 23px 20px; gap: 26px; }

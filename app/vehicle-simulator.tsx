@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type VehicleGroup = "road" | "motorcycle" | "marine" | "air";
 type VehicleCondition = "new" | "used";
 type RoadClass = "light" | "heavy" | "motorcycle" | "trailer" | "special";
+type ExchangeStatus = "loading" | "official" | "manual" | "error";
 
 type VehicleVariant = {
   id: string;
@@ -110,8 +111,43 @@ const MAX_USED_AGE: Partial<Record<RoadClass, number>> = {
   motorcycle: 3,
 };
 
+const CURRENCIES = [
+  ["AOA", "Kwanza angolano"],
+  ["USD", "Dólar americano"],
+  ["EUR", "Euro"],
+  ["CNY", "Yuan chinês"],
+  ["AED", "Dirham dos Emirados"],
+  ["GBP", "Libra esterlina"],
+  ["ZAR", "Rand sul-africano"],
+  ["JPY", "Iene japonês"],
+  ["CHF", "Franco suíço"],
+  ["CAD", "Dólar canadiano"],
+  ["AUD", "Dólar australiano"],
+  ["BRL", "Real brasileiro"],
+  ["INR", "Rupia indiana"],
+  ["KRW", "Won sul-coreano"],
+  ["MZN", "Metical moçambicano"],
+  ["NAD", "Dólar namibiano"],
+] as const;
+
+const EXCHANGE_SPREAD = 0.035;
+
 function formatKz(value: number) {
   return `${Math.round(value).toLocaleString("pt-AO")} Kz`;
+}
+
+function formatOriginal(value: number, currency: string) {
+  return `${value.toLocaleString("pt-AO", { minimumFractionDigits: 0, maximumFractionDigits: 2 })} ${currency}`;
+}
+
+function formatExchangeRate(value: number) {
+  return value.toLocaleString("pt-AO", { minimumFractionDigits: 4, maximumFractionDigits: 4 });
+}
+
+function formatBnaDate(value: string) {
+  if (!value) return "data não indicada";
+  const [year, month, day] = value.split("-");
+  return year && month && day ? `${day}.${month}.${year}` : value;
 }
 
 function rateLabel(rate: number) {
@@ -123,15 +159,45 @@ export default function VehicleSimulator() {
   const [vehicleId, setVehicleId] = useState("petrol-3000");
   const [condition, setCondition] = useState<VehicleCondition>("new");
   const [firstRegistrationYear, setFirstRegistrationYear] = useState(2023);
-  const [purchaseValue, setPurchaseValue] = useState(25000000);
-  const [freight, setFreight] = useState(2000000);
-  const [insurance, setInsurance] = useState(250000);
+  const [currency, setCurrency] = useState("USD");
+  const [bnaRate, setBnaRate] = useState<number | null>(null);
+  const [bnaRateDate, setBnaRateDate] = useState("");
+  const [exchangeStatus, setExchangeStatus] = useState<ExchangeStatus>("loading");
+  const [purchaseValue, setPurchaseValue] = useState(25000);
+  const [freight, setFreight] = useState(2000);
+  const [insurance, setInsurance] = useState(250);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    if (currency === "AOA") {
+      return () => controller.abort();
+    }
+
+    fetch(`/api/exchange?currency=${encodeURIComponent(currency)}`, { signal: controller.signal })
+      .then(async (response) => {
+        const payload = (await response.json()) as { rate?: number; date?: string | null; error?: string };
+        if (!response.ok || !payload.rate) throw new Error(payload.error ?? "Taxa indisponível");
+        setBnaRate(payload.rate);
+        setBnaRateDate(payload.date ?? "");
+        setExchangeStatus("official");
+      })
+      .catch((error: unknown) => {
+        if (error instanceof DOMException && error.name === "AbortError") return;
+        setExchangeStatus("error");
+      });
+
+    return () => controller.abort();
+  }, [currency]);
 
   const groupVehicles = VEHICLES.filter((item) => item.group === group);
   const vehicle = VEHICLES.find((item) => item.id === vehicleId) ?? groupVehicles[0];
+  const exchangeRate = currency === "AOA" ? 1 : (bnaRate ?? 0) * (1 + EXCHANGE_SPREAD);
+  const exchangeReady = currency === "AOA" || (bnaRate !== null && bnaRate > 0);
 
   const calculation = (() => {
-    const customsValue = Math.max(0, purchaseValue) + Math.max(0, freight) + Math.max(0, insurance);
+    const customsValueOriginal = Math.max(0, purchaseValue) + Math.max(0, freight) + Math.max(0, insurance);
+    const customsValue = exchangeReady ? customsValueOriginal * exchangeRate : 0;
     const tariffDutyRate = condition === "new" ? vehicle.dutyNew : vehicle.dutyUsed;
     const effectiveDutyRate = vehicle.electric ? tariffDutyRate * 0.5 : tariffDutyRate;
     const iecRate = vehicle.electric ? 0 : vehicle.iec;
@@ -144,6 +210,7 @@ export default function VehicleSimulator() {
     const anttFee = vehicle.roadClass ? ANTT_FEES[vehicle.roadClass] ?? 0 : 0;
     const taxes = customsDuty + iec + customsFee + stampDuty + vat;
     return {
+      customsValueOriginal,
       customsValue,
       tariffDutyRate,
       effectiveDutyRate,
@@ -170,6 +237,13 @@ export default function VehicleSimulator() {
     setGroup(nextGroup);
     const first = VEHICLES.find((item) => item.group === nextGroup);
     if (first) setVehicleId(first.id);
+  }
+
+  function changeCurrency(nextCurrency: string) {
+    setCurrency(nextCurrency);
+    setBnaRate(nextCurrency === "AOA" ? 1 : null);
+    setBnaRateDate("");
+    setExchangeStatus(nextCurrency === "AOA" ? "official" : "loading");
   }
 
   return (
@@ -233,17 +307,44 @@ export default function VehicleSimulator() {
             </div>
           )}
 
-          <div className="value-heading"><span>02</span><div><strong>Valor aduaneiro</strong><small>Introduza os montantes em Kwanzas</small></div></div>
-          <div className="value-fields">
-            <label className="simulator-field"><span>Preço de compra</span><div className="money-input"><input type="number" min="0" step="1000" value={purchaseValue} onChange={(event) => setPurchaseValue(Number(event.target.value))} /><b>Kz</b></div></label>
-            <label className="simulator-field"><span>Frete</span><div className="money-input"><input type="number" min="0" step="1000" value={freight} onChange={(event) => setFreight(Number(event.target.value))} /><b>Kz</b></div></label>
-            <label className="simulator-field"><span>Seguro</span><div className="money-input"><input type="number" min="0" step="1000" value={insurance} onChange={(event) => setInsurance(Number(event.target.value))} /><b>Kz</b></div></label>
+          <div className="value-heading exchange-heading"><span>02</span><div><strong>Conversão cambial</strong><small>Taxa oficial do conversor BNA com spread de 3,5%</small></div></div>
+          <div className="exchange-grid">
+            <label className="simulator-field currency-field">
+              <span>Moeda original</span>
+              <select value={currency} onChange={(event) => changeCurrency(event.target.value)}>
+                {CURRENCIES.map(([code, name]) => <option key={code} value={code}>{code} · {name}</option>)}
+              </select>
+            </label>
+            <div className={`exchange-rate-card ${exchangeStatus}`}>
+              <div className="exchange-rate-topline"><span>TAXA DE REFERÊNCIA BNA · COMPRA (G)</span><a href="https://www.bna.ao/#/pt" target="_blank" rel="noreferrer">Abrir conversor ↗</a></div>
+              <div className="exchange-rate-values">
+                <label>
+                  <span>1 {currency} =</span>
+                  <div><input aria-label={`Taxa BNA de ${currency} para AOA`} type="number" min="0" step="0.0001" value={bnaRate ?? ""} disabled={currency === "AOA" || exchangeStatus === "loading"} onChange={(event) => { setBnaRate(Number(event.target.value)); setBnaRateDate(""); setExchangeStatus("manual"); }} /><b>AOA</b></div>
+                </label>
+                <div className="spread-rate"><span>Spread aplicado</span><strong>+3,5%</strong><small>Taxa final: {exchangeReady ? `${formatExchangeRate(exchangeRate)} AOA` : "—"}</small></div>
+              </div>
+              <p>{exchangeStatus === "loading" ? "A consultar o conversor oficial do BNA…" : exchangeStatus === "error" ? "BNA indisponível. Introduza manualmente a taxa apresentada no conversor oficial." : exchangeStatus === "manual" ? "Taxa alterada manualmente. Confirme-a no portal do BNA." : currency === "AOA" ? "Sem conversão cambial." : `Cotação BNA de ${formatBnaDate(bnaRateDate)}.`}</p>
+            </div>
           </div>
-          <div className="cif-line"><span>Valor aduaneiro estimado (CIF)</span><strong>{formatKz(calculation.customsValue)}</strong></div>
+
+          <div className="value-heading"><span>03</span><div><strong>Valor aduaneiro</strong><small>Introduza os montantes na moeda original</small></div></div>
+          <div className="value-fields">
+            <label className="simulator-field"><span>Preço de compra</span><div className="money-input"><input type="number" min="0" step={currency === "AOA" ? "1000" : "1"} value={purchaseValue} onChange={(event) => setPurchaseValue(Number(event.target.value))} /><b>{currency}</b></div></label>
+            <label className="simulator-field"><span>Frete</span><div className="money-input"><input type="number" min="0" step={currency === "AOA" ? "1000" : "1"} value={freight} onChange={(event) => setFreight(Number(event.target.value))} /><b>{currency}</b></div></label>
+            <label className="simulator-field"><span>Seguro</span><div className="money-input"><input type="number" min="0" step={currency === "AOA" ? "1000" : "1"} value={insurance} onChange={(event) => setInsurance(Number(event.target.value))} /><b>{currency}</b></div></label>
+          </div>
+          <div className="cif-lines">
+            <div><span>CIF na moeda original</span><strong>{formatOriginal(calculation.customsValueOriginal, currency)}</strong></div>
+            <div className="converted-cif"><span>Valor aduaneiro convertido</span><strong>{exchangeReady ? formatKz(calculation.customsValue) : "A aguardar taxa BNA"}</strong></div>
+          </div>
         </div>
 
         <aside className="simulation-result" aria-live="polite">
           <div className="result-topline"><span>ESTIMATIVA 2026</span><button onClick={() => window.print()}>Imprimir</button></div>
+          {currency !== "AOA" && (
+            <div className="result-exchange"><span>CONVERSÃO CAMBIAL</span><strong>{formatOriginal(calculation.customsValueOriginal, currency)} → {exchangeReady ? formatKz(calculation.customsValue) : "—"}</strong><small>{exchangeReady ? `Taxa BNA ${formatExchangeRate(bnaRate ?? 0)} + spread 3,5% = ${formatExchangeRate(exchangeRate)} AOA` : "A aguardar uma taxa válida do BNA."}</small></div>
+          )}
           <div className="selected-tariff"><small>CÓDIGO PAUTAL APLICADO</small><code>{selectedCode}</code><span>{vehicle.label} · {condition === "new" ? "Novo" : "Usado"}</span></div>
 
           {vehicle.electric && (
@@ -276,6 +377,7 @@ export default function VehicleSimulator() {
           <a href="https://lex.ao/docs/presidente-da-republica/2018/decreto-legislativo-presidencial-n-o-3-18-de-09-de-maio/" target="_blank" rel="noreferrer">Emolumentos e Imposto de Selo <span>↗</span></a>
           <a href="https://lex.ao/docs/presidente-da-republica/2020/decreto-presidencial-n-o-155-20-de-01-de-junho/" target="_blank" rel="noreferrer">Novos e usados · DP n.º 155/20 <span>↗</span></a>
           <a href="https://www.antt.gov.ao/pt/Servicos-Modal-Rodoviario" target="_blank" rel="noreferrer">Autorizações e taxas ANTT <span>↗</span></a>
+          <a href="https://www.bna.ao/#/pt" target="_blank" rel="noreferrer">Conversor oficial de moedas · BNA <span>↗</span></a>
         </div>
       </section>
     </section>
