@@ -9,6 +9,7 @@ Aplicação web para consulta da Pauta Aduaneira de Angola, com direitos de impo
 - Consulta da unidade de quantidade e página da fonte
 - Exportação da pauta completa ou filtrada para Excel
 - Download do PDF oficial completo da Pauta Aduaneira 2024
+- Simulador de importação de viaturas terrestres, motociclos, embarcações e aeronaves, com distinção entre novo e usado, benefícios dos eléctricos e cálculo de Direitos Aduaneiros, IEC, Emolumentos Gerais, Imposto de Selo, IVA e autorização ANTT quando aplicável
 - Classificação pautal de listas com até 50 produtos
 - Classificação avançada gratuita com Cloudflare Workers AI e `@cf/openai/gpt-oss-20b`
 - IA local gratuita, treinada sobre a nomenclatura pautal e executada no navegador
@@ -50,6 +51,7 @@ O GPT-OSS 20B recebe apenas a descrição dos produtos e oito candidatos selecci
 ## Estrutura principal
 
 - `app/page.tsx` - pesquisa, filtros, exportação e classificação em lote
+- `app/vehicle-simulator.tsx` - códigos, impostos, benefícios e cálculo da importação de viaturas
 - `app/api/classify/route.ts` - integração e validação do Cloudflare Workers AI
 - `app/data/pauta.json` - base de códigos pautais
 - `app/data/local-ai-meta.json` e `public/local-ai-model.bin` - modelo semântico local

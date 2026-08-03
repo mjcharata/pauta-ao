@@ -2,6 +2,7 @@
 
 import { ChangeEvent, FormEvent, useMemo, useState } from "react";
 import pautaRecords from "./data/pauta.json";
+import VehicleSimulator from "./vehicle-simulator";
 
 type TariffRecord = {
   code: string;
@@ -156,7 +157,7 @@ function localClassify(products: string[]): Classification[] {
 }
 
 export default function Home() {
-  const [view, setView] = useState<"search" | "classify">("search");
+  const [view, setView] = useState<"search" | "classify" | "vehicles">("search");
   const [query, setQuery] = useState("");
   const [chapter, setChapter] = useState("todos");
   const [rate, setRate] = useState("todos");
@@ -340,7 +341,7 @@ export default function Home() {
   return (
     <main className="site-shell">
       <header className="topbar">
-        <a className="brand" href="#top" aria-label="Pauta AO — página inicial">
+        <a className="brand" href="#top" aria-label="Pauta AO — página inicial" onClick={() => setView("search")}>
           <span className="brand-mark">PA</span>
           <span>
             <strong>Pauta AO</strong>
@@ -350,6 +351,7 @@ export default function Home() {
         <nav className="main-nav" aria-label="Navegação principal">
           <button className={view === "search" ? "active" : ""} onClick={() => setView("search")}>Pesquisa</button>
           <button className={`ai-nav ${view === "classify" ? "active" : ""}`} onClick={openAISearch}><span aria-hidden="true" /> Pesquisa com IA</button>
+          <button className={`vehicle-nav ${view === "vehicles" ? "active" : ""}`} onClick={() => setView("vehicles")}>Simulador de viaturas</button>
         </nav>
         <div className="edition-pill"><span /> Taxas actualizadas · OGE 2026</div>
       </header>
@@ -458,7 +460,7 @@ export default function Home() {
             </div>
           </section>
         </>
-      ) : (
+      ) : view === "classify" ? (
         <section className="classifier-page" id="top">
           <div className="classifier-intro">
             <p className="eyebrow">PESQUISA PAUTAL COM IA</p>
@@ -527,6 +529,8 @@ export default function Home() {
             </section>
           )}
         </section>
+      ) : (
+        <VehicleSimulator />
       )}
 
       <footer>

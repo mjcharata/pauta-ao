@@ -23,9 +23,30 @@ test("renders the customs tariff experience", async () => {
   assert.match(html, /Descarregar PDF oficial/);
   assert.match(html, /pauta-aduaneira-angola-2024\.pdf/);
   assert.match(html, /Pesquisa com IA/);
+  assert.match(html, /Simulador de viaturas/);
   assert.match(html, /class="search-submit">Pesquisar/);
   assert.match(html, /OGE 2026/);
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton/i);
+});
+
+test("includes the 2026 vehicle import simulator and its legal safeguards", async () => {
+  const [pageSource, simulatorSource] = await Promise.all([
+    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/vehicle-simulator.tsx", import.meta.url), "utf8"),
+  ]);
+  assert.match(pageSource, /VehicleSimulator/);
+  assert.match(pageSource, /Simulador de viaturas/);
+  assert.match(simulatorSource, /Viaturas terrestres/);
+  assert.match(simulatorSource, /Embarcações/);
+  assert.match(simulatorSource, /Aeronaves/);
+  assert.match(simulatorSource, /Imposto Especial de Consumo/);
+  assert.match(simulatorSource, /Emolumentos Gerais Aduaneiros/);
+  assert.match(simulatorSource, /vatBase \* 0\.14/);
+  assert.match(simulatorSource, /tariffDutyRate \* 0\.5/);
+  assert.match(simulatorSource, /Lei n\.º 16\/21/);
+  assert.match(simulatorSource, /Lei n\.º 8\/22/);
+  assert.match(simulatorSource, /DP n\.º 155\/20/);
+  assert.match(simulatorSource, /Não inclui despachante/i);
 });
 
 test("packages the complete official source PDF", async () => {

@@ -10,12 +10,12 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     title: "Pauta AO — Taxas aduaneiras actualizadas pelo OGE 2026",
-    description: "Pesquisa de códigos pautais, taxas do OGE 2026 e classificação assistida de listas de produtos.",
+    description: "Pesquisa de códigos pautais, taxas do OGE 2026, classificação assistida e simulador de importação de viaturas.",
     metadataBase: base ? new URL(base) : undefined,
     icons: { icon: "/favicon.png", shortcut: "/favicon.png" },
     openGraph: {
       title: "Pauta AO — Encontre o código certo",
-      description: "A Pauta Aduaneira de Angola com as taxas actualizadas pelo OGE 2026.",
+      description: "A Pauta Aduaneira de Angola com taxas do OGE 2026 e simulador de importação de viaturas.",
       type: "website",
       images: [{ url: "/og.png", width: 1200, height: 630, alt: "Pauta AO — pesquisa pautal para Angola" }],
     },
