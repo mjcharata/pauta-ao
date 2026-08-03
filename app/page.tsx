@@ -23,8 +23,8 @@ type Classification = {
   reviewRequired: boolean;
 };
 
-type ClassifierEngine = "local-ai" | "openai";
-type ClassificationMode = "local-ai" | "local-fallback" | "openai";
+type ClassifierEngine = "local-ai" | "workers-ai";
+type ClassificationMode = "local-ai" | "local-fallback" | "workers-ai";
 
 const records = pautaRecords as TariffRecord[];
 const PAGE_SIZE = 11;
@@ -291,11 +291,15 @@ export default function Home() {
             body: JSON.stringify({ products }),
           });
           if (!response.ok) throw new Error("API indisponível");
-          const payload = (await response.json()) as { results: Classification[] };
+          const payload = (await response.json()) as {
+            results: Classification[];
+            provider: "workers-ai";
+            model: string;
+          };
           setClassifications(payload.results);
-          setClassificationMode("openai");
+          setClassificationMode("workers-ai");
         } catch {
-          showNotice("OpenAI indisponível. A usar IA local gratuita.");
+          showNotice("Cloudflare AI indisponível ou quota diária atingida. A usar IA local gratuita.");
           await runLocalAI();
         }
       }
@@ -453,13 +457,13 @@ export default function Home() {
                   <small>Modelo híbrido 2.0 · sem chave · privado</small>
                 </button>
                 <button
-                  className={classifierEngine === "openai" ? "active" : ""}
-                  aria-pressed={classifierEngine === "openai"}
-                  onClick={() => { setClassifierEngine("openai"); setClassifications([]); }}
+                  className={classifierEngine === "workers-ai" ? "active" : ""}
+                  aria-pressed={classifierEngine === "workers-ai"}
+                  onClick={() => { setClassifierEngine("workers-ai"); setClassifications([]); }}
                   disabled={classifying}
                 >
-                  <span>OpenAI avançada</span>
-                  <small>Opcional · requer chave configurada</small>
+                  <span><i /> Cloudflare AI gratuita</span>
+                  <small>GPT-OSS 20B · sem chave · quota diária</small>
                 </button>
               </div>
               <textarea aria-label="Lista de produtos" value={productsText} onChange={(event) => { setProductsText(event.target.value); setClassifications([]); }} placeholder="Ex.: Camisas de algodão para homem" />
@@ -471,8 +475,8 @@ export default function Home() {
 
             <aside className="method-card">
               <span className="method-kicker">MÉTODO</span>
-              <h2>Modelo híbrido com contexto pautal</h2>
-              <p>O modo gratuito reconhece sinónimos, materiais, finalidade e linguagem comercial antes de comparar cada produto com os 6.056 códigos. Tudo é processado no dispositivo.</p>
+              <h2>Dois níveis de análise pautal</h2>
+              <p>O modo local processa tudo neste dispositivo. O modo Cloudflare usa o GPT-OSS 20B para raciocinar apenas sobre candidatos retirados dos 6.056 códigos da pauta.</p>
               <ul><li><span>1</span>Interpreta sinónimos comerciais</li><li><span>2</span>Cruza família, material e utilização</li><li><span>3</span>Sinaliza alternativas próximas</li></ul>
               <div className="legal-note">A classificação proposta é indicativa e não substitui uma Informação Pautal Vinculativa da Administração Geral Tributária.</div>
             </aside>
@@ -481,7 +485,7 @@ export default function Home() {
           {classifications.length > 0 && (
             <section className="results-card" aria-live="polite">
               <div className="results-heading">
-                <div><span className="step-number">02</span><div><strong>Propostas de classificação</strong><small>{classificationMode === "openai" ? "Análise concluída pela integração OpenAI" : classificationMode === "local-ai" ? "IA local gratuita — os dados foram processados neste dispositivo" : "Correspondência local leve — confirme os casos assinalados"}</small></div></div>
+                <div><span className="step-number">02</span><div><strong>Propostas de classificação</strong><small>{classificationMode === "workers-ai" ? "Análise concluída pelo GPT-OSS 20B no Cloudflare Workers AI" : classificationMode === "local-ai" ? "IA local gratuita — os dados foram processados neste dispositivo" : "Correspondência local leve — confirme os casos assinalados"}</small></div></div>
                 <button className="secondary-button" onClick={exportClassifications}>↓ Exportar resultados</button>
               </div>
               <div className="classification-list">

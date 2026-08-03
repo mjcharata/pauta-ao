@@ -9,7 +9,7 @@ Aplicação web para consulta da Pauta Aduaneira de Angola, com direitos de impo
 - Consulta da unidade de quantidade e página da fonte
 - Exportação da pauta completa ou filtrada para Excel
 - Classificação pautal de listas com até 50 produtos
-- Integração opcional com a API da OpenAI
+- Classificação avançada gratuita com Cloudflare Workers AI e `@cf/openai/gpt-oss-20b`
 - IA local gratuita, treinada sobre a nomenclatura pautal e executada no navegador
 
 A base incluída em `app/data/pauta.json` contém 6.056 códigos pautais únicos. A nomenclatura parte do Decreto Legislativo Presidencial n.º 1/24 e 1.099 taxas/códigos foram cruzados com o Anexo III do OGE 2026; 50 códigos do anexo foram acrescentados à base.
@@ -32,23 +32,24 @@ Abra o endereço apresentado no terminal. Para validar uma versão de produção
 npm test
 ```
 
-## Integração com a OpenAI
+## Cloudflare Workers AI
 
-Copie `.env.example` para `.env.local` e preencha a chave:
+O modo avançado usa o modelo aberto GPT-OSS 20B através de uma ligação nativa do Cloudflare Worker. Não é necessário criar nem publicar uma chave de API. A ligação já consta de `wrangler.jsonc`:
 
-```env
-OPENAI_API_KEY=sua_chave
-OPENAI_MODEL=gpt-5.6-luna
+```json
+"ai": {
+  "binding": "AI"
+}
 ```
 
-Nunca publique a sua chave no GitHub. O ficheiro `.env.local` já está excluído pelo `.gitignore`.
+No plano gratuito, o Workers AI inclui uma quota diária de 10.000 neurons. A quota reinicia às 00:00 UTC; ao ser atingida, o site muda automaticamente para a IA local gratuita, sem cobrança automática.
 
-Sem uma chave configurada, a aplicação continua funcional. O modo gratuito usa um modelo híbrido local (TF-IDF + LSA, vocabulário comercial, contexto por família pautal e sinais de material/utilização), alinhado com os 6.056 registos, sem enviar as descrições dos produtos para serviços externos.
+O GPT-OSS 20B recebe apenas a descrição dos produtos e oito candidatos seleccionados na pauta para cada item. A resposta é validada no servidor: um código que não conste desses candidatos é rejeitado. O modo local continua disponível e usa um modelo híbrido (TF-IDF + LSA, vocabulário comercial, contexto por família pautal e sinais de material/utilização), alinhado com os 6.056 registos, sem enviar dados para serviços externos.
 
 ## Estrutura principal
 
 - `app/page.tsx` - pesquisa, filtros, exportação e classificação em lote
-- `app/api/classify/route.ts` - integração com a API da OpenAI
+- `app/api/classify/route.ts` - integração e validação do Cloudflare Workers AI
 - `app/data/pauta.json` - base de códigos pautais
 - `app/data/local-ai-meta.json` e `public/local-ai-model.bin` - modelo semântico local
 - `app/globals.css` - estilos visuais
