@@ -20,7 +20,8 @@ test("renders the customs tariff experience", async () => {
   assert.match(html, /Pauta AO/);
   assert.match(html, /Encontre o código certo/);
   assert.match(html, /Exportar para Excel/);
-  assert.match(html, /Classificar lista/);
+  assert.match(html, /Pesquisa com IA/);
+  assert.match(html, /class="search-submit">Pesquisar/);
   assert.match(html, /OGE 2026/);
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton/i);
 });
@@ -54,4 +55,5 @@ test("configures the free Cloudflare Workers AI classifier", async () => {
   assert.match(routeSource, /choices\?\.\[0\]\?\.message\?\.content/);
   assert.match(pageSource, /Cloudflare AI gratuita/);
   assert.match(pageSource, /GPT-OSS 20B/);
+  assert.match(pageSource, /useState<ClassifierEngine>\("workers-ai"\)/);
 });

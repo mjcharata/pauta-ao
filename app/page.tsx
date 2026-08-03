@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, useMemo, useState } from "react";
+import { ChangeEvent, FormEvent, useMemo, useState } from "react";
 import pautaRecords from "./data/pauta.json";
 
 type TariffRecord = {
@@ -165,7 +165,7 @@ export default function Home() {
   const [productsText, setProductsText] = useState(DEFAULT_PRODUCTS);
   const [classifications, setClassifications] = useState<Classification[]>([]);
   const [classifying, setClassifying] = useState(false);
-  const [classifierEngine, setClassifierEngine] = useState<ClassifierEngine>("local-ai");
+  const [classifierEngine, setClassifierEngine] = useState<ClassifierEngine>("workers-ai");
   const [classificationMode, setClassificationMode] = useState<ClassificationMode | null>(null);
   const [classificationProgress, setClassificationProgress] = useState("");
   const [notice, setNotice] = useState("");
@@ -209,6 +209,20 @@ export default function Home() {
   function showNotice(message: string) {
     setNotice(message);
     window.setTimeout(() => setNotice(""), 2800);
+  }
+
+  function submitSearch(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setPage(1);
+    window.requestAnimationFrame(() => {
+      document.getElementById("catalogue-title")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }
+
+  function openAISearch() {
+    setClassifierEngine("workers-ai");
+    setClassifications([]);
+    setView("classify");
   }
 
   function exportTariff() {
@@ -335,7 +349,7 @@ export default function Home() {
         </a>
         <nav className="main-nav" aria-label="Navegação principal">
           <button className={view === "search" ? "active" : ""} onClick={() => setView("search")}>Pesquisa</button>
-          <button className={view === "classify" ? "active" : ""} onClick={() => setView("classify")}>Classificar lista</button>
+          <button className={`ai-nav ${view === "classify" ? "active" : ""}`} onClick={openAISearch}><span aria-hidden="true" /> Pesquisa com IA</button>
         </nav>
         <div className="edition-pill"><span /> Taxas actualizadas · OGE 2026</div>
       </header>
@@ -350,7 +364,7 @@ export default function Home() {
             </div>
             <div className="search-card">
               <label htmlFor="tariff-search">O que pretende importar?</label>
-              <div className="search-line">
+              <form className="search-line" onSubmit={submitSearch}>
                 <span className="search-symbol" aria-hidden="true" />
                 <input
                   id="tariff-search"
@@ -359,13 +373,21 @@ export default function Home() {
                   placeholder="Ex.: arroz, telemóvel ou 8517.13.00"
                   autoComplete="off"
                 />
-                {query && <button className="clear-button" onClick={() => changeFilter(() => setQuery(""))} aria-label="Limpar pesquisa">×</button>}
-              </div>
-              <div className="search-hints">
-                <span>Experimente:</span>
-                {["arroz", "cimento", "automóvel"].map((hint) => (
-                  <button key={hint} onClick={() => changeFilter(() => setQuery(hint))}>{hint}</button>
-                ))}
+                {query && <button type="button" className="clear-button" onClick={() => changeFilter(() => setQuery(""))} aria-label="Limpar pesquisa">×</button>}
+                <button type="submit" className="search-submit">Pesquisar <span aria-hidden="true">→</span></button>
+              </form>
+              <div className="search-card-footer">
+                <div className="search-hints">
+                  <span>Experimente:</span>
+                  {["arroz", "cimento", "automóvel"].map((hint) => (
+                    <button key={hint} onClick={() => changeFilter(() => setQuery(hint))}>{hint}</button>
+                  ))}
+                </div>
+                <button className="ai-search-cta" onClick={openAISearch}>
+                  <span className="ai-status-dot" aria-hidden="true" />
+                  <span><strong>Pesquisa com IA</strong><small>GPT-OSS 20B · gratuita</small></span>
+                  <b aria-hidden="true">→</b>
+                </button>
               </div>
             </div>
             <div className="source-note">Base: DLP n.º 1/24 · Taxas: Lei n.º 14/25 (OGE 2026), artigo 31.º e Anexo III</div>
@@ -435,9 +457,9 @@ export default function Home() {
       ) : (
         <section className="classifier-page" id="top">
           <div className="classifier-intro">
-            <p className="eyebrow">CLASSIFICAÇÃO EM LOTE</p>
-            <h1>Da lista de produtos<br />à proposta pautal.</h1>
-            <p>Introduza até 50 produtos. A análise cruza a descrição comercial com a nomenclatura da pauta e assinala os casos que exigem revisão.</p>
+            <p className="eyebrow">PESQUISA PAUTAL COM IA</p>
+            <h1>Da descrição comercial<br />à proposta pautal.</h1>
+            <p>Pesquise até 50 produtos de uma vez. O GPT-OSS 20B cruza a descrição comercial com a pauta e assinala os casos que exigem revisão.</p>
           </div>
 
           <div className="classifier-grid">
@@ -448,15 +470,6 @@ export default function Home() {
               </div>
               <div className="engine-picker" role="radiogroup" aria-label="Modo de classificação">
                 <button
-                  className={classifierEngine === "local-ai" ? "active" : ""}
-                  aria-pressed={classifierEngine === "local-ai"}
-                  onClick={() => { setClassifierEngine("local-ai"); setClassifications([]); }}
-                  disabled={classifying}
-                >
-                  <span><i /> IA local gratuita</span>
-                  <small>Modelo híbrido 2.0 · sem chave · privado</small>
-                </button>
-                <button
                   className={classifierEngine === "workers-ai" ? "active" : ""}
                   aria-pressed={classifierEngine === "workers-ai"}
                   onClick={() => { setClassifierEngine("workers-ai"); setClassifications([]); }}
@@ -465,11 +478,20 @@ export default function Home() {
                   <span><i /> Cloudflare AI gratuita</span>
                   <small>GPT-OSS 20B · sem chave · quota diária</small>
                 </button>
+                <button
+                  className={classifierEngine === "local-ai" ? "active" : ""}
+                  aria-pressed={classifierEngine === "local-ai"}
+                  onClick={() => { setClassifierEngine("local-ai"); setClassifications([]); }}
+                  disabled={classifying}
+                >
+                  <span><i /> IA local gratuita</span>
+                  <small>Modelo híbrido 2.0 · sem chave · privado</small>
+                </button>
               </div>
               <textarea aria-label="Lista de produtos" value={productsText} onChange={(event) => { setProductsText(event.target.value); setClassifications([]); }} placeholder="Ex.: Camisas de algodão para homem" />
               <div className="batch-actions">
                 <span>{productsText.split(/\r?\n/).filter((item) => item.trim()).length} de 50 produtos</span>
-                <button className="primary-button" onClick={classifyProducts} disabled={classifying}>{classifying ? classificationProgress : "Classificar produtos"}<span aria-hidden="true">→</span></button>
+                <button className="primary-button" onClick={classifyProducts} disabled={classifying}>{classifying ? classificationProgress : classifierEngine === "workers-ai" ? "Pesquisar códigos com IA" : "Classificar produtos"}<span aria-hidden="true">→</span></button>
               </div>
             </div>
 
