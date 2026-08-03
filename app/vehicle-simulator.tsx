@@ -28,26 +28,22 @@ const GROUPS: Array<{ id: VehicleGroup; label: string; short: string }> = [
   { id: "air", label: "Aeronaves", short: "Aeronaves" },
 ];
 
-const GROUP_VISUALS: Record<VehicleGroup, { title: string; category: string; description: string }> = {
+const GROUP_VISUALS: Record<VehicleGroup, { title: string; category: string }> = {
   road: {
     title: "Lexus LX 600",
     category: "VIATURA TERRESTRE · REFERÊNCIA VISUAL",
-    description: "SUV de passageiros utilizado para representar automóveis ligeiros no simulador.",
   },
   motorcycle: {
     title: "BMW R 1200 GS",
     category: "MOTOCICLO · REFERÊNCIA VISUAL",
-    description: "Motociclo de aventura utilizado para representar a categoria de duas rodas.",
   },
   marine: {
     title: "Iate a motor de recreio",
     category: "EMBARCAÇÃO · REFERÊNCIA VISUAL",
-    description: "Embarcação de recreio utilizada para representar barcos e outras estruturas flutuantes.",
   },
   air: {
     title: "Avião executivo de longo curso",
     category: "AERONAVE · REFERÊNCIA VISUAL",
-    description: "Jacto executivo utilizado para representar aeronaves e aparelhos aéreos.",
   },
 };
 
@@ -321,8 +317,6 @@ export default function VehicleSimulator() {
         <div className="vehicle-showcase-copy">
           <span>{groupVisual.category}</span>
           <h2>{groupVisual.title}</h2>
-          <p>{groupVisual.description}</p>
-          <small>A imagem é ilustrativa. A classificação e os impostos dependem das características seleccionadas abaixo.</small>
         </div>
       </section>
 

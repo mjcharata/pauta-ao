@@ -208,8 +208,6 @@ td code { color: var(--forest); font-size: 13px; font-weight: 700; letter-spacin
 .vehicle-showcase-copy { display: flex; flex-direction: column; justify-content: center; background: var(--forest); color: white; padding: 34px 36px; border-top: 3px solid var(--gold); }
 .vehicle-showcase-copy > span { color: #d4ba7b; font-size: 8px; font-weight: 750; letter-spacing: .14em; }
 .vehicle-showcase-copy h2 { font: 500 31px/1.05 Georgia, serif; letter-spacing: -.02em; margin: 14px 0 0; }
-.vehicle-showcase-copy p { color: rgba(255,255,255,.72); font-size: 11px; line-height: 1.6; margin: 17px 0 0; }
-.vehicle-showcase-copy small { color: rgba(255,255,255,.43); border-top: 1px solid rgba(255,255,255,.14); font-size: 8px; line-height: 1.5; margin-top: 23px; padding-top: 16px; }
 .simulator-layout { display: grid; grid-template-columns: minmax(0, 1.12fr) minmax(390px, .88fr); align-items: start; gap: 18px; }
 .simulator-form-card { background: var(--card); border: 1px solid #d5d6cf; padding: 28px; }
 .simulator-card-heading, .value-heading { display: flex; align-items: center; gap: 13px; margin-bottom: 24px; }
