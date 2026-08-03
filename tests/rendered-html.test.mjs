@@ -73,6 +73,12 @@ test("packages the complete official source PDF", async () => {
   assert.equal(pdf.byteLength, 20514916);
 });
 
+test("packages the Sites hosting metadata with the production build", async () => {
+  const source = JSON.parse(await readFile(new URL("../.openai/hosting.json", import.meta.url), "utf8"));
+  const packaged = JSON.parse(await readFile(new URL("../dist/.openai/hosting.json", import.meta.url), "utf8"));
+  assert.deepEqual(packaged, source);
+});
+
 test("keeps the local AI model aligned with the tariff database", async () => {
   const [metadataText, tariffText, model, pageSource] = await Promise.all([
     readFile(new URL("../app/data/local-ai-meta.json", import.meta.url), "utf8"),
