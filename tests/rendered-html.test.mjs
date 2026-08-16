@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 
@@ -91,19 +92,72 @@ test("packages the Sites hosting metadata with the production build", async () =
 });
 
 test("keeps the local AI model aligned with the tariff database", async () => {
-  const [metadataText, tariffText, model, pageSource] = await Promise.all([
+  const [metadataText, tariffText, auditText, model, pageSource] = await Promise.all([
     readFile(new URL("../app/data/local-ai-meta.json", import.meta.url), "utf8"),
     readFile(new URL("../app/data/pauta.json", import.meta.url), "utf8"),
+    readFile(new URL("../app/data/tariff-audit.json", import.meta.url), "utf8"),
     readFile(new URL("../public/local-ai-model.bin", import.meta.url)),
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
   ]);
   const metadata = JSON.parse(metadataText);
   const tariff = JSON.parse(tariffText);
+  const audit = JSON.parse(auditText);
   assert.equal(metadata.records, tariff.length);
   assert.equal(new Set(tariff.map((item) => item.code)).size, tariff.length);
-  assert.equal(tariff.length, 6056);
+  assert.equal(tariff.length, audit.recordsAfter);
+  assert.equal(tariff.length, 6043);
   assert.equal(model.byteLength, metadata.componentBytes + metadata.records * metadata.dimensions);
   assert.match(pageSource, /IA local gratuita/);
+});
+
+test("keeps the audited customs rates complete and correctly classified", async () => {
+  const [tariffText, auditText, pdf, pageSource] = await Promise.all([
+    readFile(new URL("../app/data/pauta.json", import.meta.url), "utf8"),
+    readFile(new URL("../app/data/tariff-audit.json", import.meta.url), "utf8"),
+    readFile(new URL("../public/pauta-aduaneira-angola-2024.pdf", import.meta.url)),
+    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+  ]);
+  const tariff = JSON.parse(tariffText);
+  const audit = JSON.parse(auditText);
+  const byCode = new Map(tariff.map((item) => [item.code, item]));
+  const expectedRates = {
+    "0208.40.00": "55",
+    "0208.50.00": "55",
+    "0302.11.00": "20",
+    "2207.10.00": "55",
+    "2401.20.00": "55",
+    "5007.10.00": "5",
+    "6109.10.00": "40",
+    "8485.90.00": "0",
+    "8703.70.00": "10",
+    "8708.94.90": "5",
+    "9505.10.00": "5",
+    "9603.10.00": "10",
+  };
+  const ghostCodes = [
+    "1223.00.00", "1808.52.00", "2027.90.00", "3405.50.00",
+    "4002.43.00", "4811.50.00", "4814.50.00", "7326.90.90",
+    "7404.90.00", "7908.90.00", "8499.10.00", "8703.23.90",
+    "9304.10.00",
+  ];
+
+  assert.equal(audit.validation.unresolvedRates, 0);
+  assert.equal(audit.validation.allowedRatesOnly, true);
+  assert.equal(audit.annexOverridesPreserved, 1099);
+  assert.equal(audit.corrections.removedGhostRecords, ghostCodes.length);
+  assert.equal(tariff.filter((item) => item.rateSource === "Lei n.º 14/25 · Anexo III").length, 1099);
+  assert.ok(tariff.every((item) => item.rate && item.rate !== "—"));
+  assert.equal(
+    createHash("sha256").update(pdf).digest("hex").toUpperCase(),
+    audit.source.sha256,
+  );
+  for (const [code, rate] of Object.entries(expectedRates)) {
+    assert.equal(byCode.get(code)?.rate, rate, `incorrect audited rate for ${code}`);
+  }
+  for (const code of ghostCodes) assert.equal(byCode.has(code), false, `ghost code ${code} remains`);
+  assert.equal(byCode.get("8708.94.90")?.baseRate, "0");
+  assert.match(pageSource, /Regime R\.G\./);
+  assert.match(pageSource, /Taxa R\.G\. \(%\)/);
 });
 
 test("configures the free Cloudflare Workers AI classifier", async () => {

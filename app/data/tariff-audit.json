@@ -1,0 +1,47 @@
+{
+  "generatedAt": "2026-08-16",
+  "methodology": "OCR 300 dpi, exact-code row alignment, isolated low-confidence cell reread, and manual review of exceptions",
+  "source": {
+    "document": "Pauta Aduaneira 2024 — Diário da República, I Série, n.º 2, de 3 de Janeiro de 2024",
+    "pages": 345,
+    "sha256": "CC432FC213790C7D1D8D0A5134D366D6B2DEC0157BD661C54FDBEA125961B470"
+  },
+  "recordsBefore": 6056,
+  "recordsAfter": 6043,
+  "baseRecordsAfter": 5993,
+  "oge2026NewRecords": 50,
+  "annexOverridesPreserved": 1099,
+  "ocr": {
+    "matchedCodes": 5983,
+    "extractedRates": 5952
+  },
+  "corrections": {
+    "removedGhostRecords": 13,
+    "filledPreviouslyMissing": 947,
+    "filledPreviouslyMissingWithDuty": 552,
+    "correctedFalseFree": 1,
+    "numericCorrections": 69,
+    "article31MinimumApplied": 3,
+    "totalChangedOrRemoved": 1030
+  },
+  "distribution": {
+    "0": 1,
+    "5": 1015,
+    "10": 807,
+    "15": 20,
+    "20": 371,
+    "25": 243,
+    "30": 480,
+    "35": 1,
+    "40": 327,
+    "50": 517,
+    "55": 65,
+    "Livre": 2196
+  },
+  "validation": {
+    "uniqueCodes": true,
+    "unresolvedRates": 0,
+    "allowedRatesOnly": true,
+    "localAiRecords": 6043
+  }
+}

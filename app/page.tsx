@@ -13,6 +13,7 @@ type TariffRecord = {
   source?: string;
   rateSource?: string;
   ogePage?: number;
+  baseRate?: string;
 };
 
 type Classification = {
@@ -80,6 +81,13 @@ function chapterLabel(chapter: string) {
 function formatRate(value: string) {
   if (!value || value === "—") return "—";
   return value === "Livre" ? "Livre" : `${value}%`;
+}
+
+function formatRateSource(record: TariffRecord) {
+  if (!record.rateSource) return "Decreto Legislativo Presidencial n.º 1/24";
+  return record.ogePage
+    ? `${record.rateSource}, p. ${record.ogePage}`
+    : record.rateSource;
 }
 
 function escapeCell(value: string | number) {
@@ -237,13 +245,15 @@ export default function Home() {
         "Código pautal": record.code,
         "Designação das mercadorias": record.description,
         UQ: record.unit,
-        "Direito de importação (R.G.)": record.rate,
+        "Direito de importação (R.G.)": formatRate(record.rate),
+        "Regime R.G.": record.rate === "Livre" ? "Livre" : "Tributado",
+        "Taxa R.G. (%)": record.rate === "Livre" || record.rate === "—"
+          ? ""
+          : Number(record.rate),
         "Fonte da nomenclatura": record.source === "OGE 2026"
           ? `Lei n.º 14/25, Anexo III, p. ${record.page}`
           : `Pauta Aduaneira 2024, p. ${record.page}`,
-        "Fonte da taxa": record.rateSource
-          ? `${record.rateSource}, p. ${record.ogePage}`
-          : "Decreto Legislativo Presidencial n.º 1/24",
+        "Fonte da taxa": formatRateSource(record),
       })),
       filtered.length === records.length
         ? "pauta-aduaneira-angola-taxas-oge-2026.xls"
@@ -572,8 +582,9 @@ export default function Home() {
               <div><dt>Capítulo</dt><dd>{chapterLabel(selected.code.slice(0, 2))}</dd></div>
               <div><dt>Unidade de quantidade</dt><dd>{selected.unit || "Não indicada"}</dd></div>
               <div><dt>Direito de importação — R.G. 2026</dt><dd>{formatRate(selected.rate)}</dd></div>
+              {selected.baseRate && <div><dt>Taxa-base na Pauta 2024</dt><dd>{formatRate(selected.baseRate)}</dd></div>}
               <div><dt>Fonte da nomenclatura</dt><dd>{selected.source === "OGE 2026" ? `Anexo III do OGE 2026, página ${selected.page}` : `Pauta Aduaneira 2024, página ${selected.page}`}</dd></div>
-              {selected.rateSource && <div><dt>Fonte da taxa</dt><dd>{selected.rateSource}, página {selected.ogePage}</dd></div>}
+              {selected.rateSource && <div><dt>Fonte da taxa</dt><dd>{formatRateSource(selected)}</dd></div>}
             </dl>
             <div className="drawer-callout"><strong>Nota de utilização</strong><p>Em 2026, a regra geral estabelece um mínimo de 5%, sem prejuízo das mercadorias Livres, benefícios legais e taxas específicas do Anexo III. Confirme sempre as notas e excepções aplicáveis.</p></div>
             <button className="primary-button full" onClick={() => { navigator.clipboard?.writeText(selected.code); showNotice("Código copiado."); }}>Copiar código pautal</button>
